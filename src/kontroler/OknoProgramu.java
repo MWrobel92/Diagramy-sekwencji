@@ -2,7 +2,6 @@ package kontroler;
 
 import widok.PanelDiagramu;
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.GridLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -20,15 +19,19 @@ import model.Diagram;
  */
 public class OknoProgramu extends JPanel {
     
-    private static void przygotujIPokazGUI() {        
+    private KontrolerOkna listener;
+    private JFrame frame;
+    
+    private void przygotujIPokazGUI() {        
         
         // Podstawowe ustawienia okna
         JFrame.setDefaultLookAndFeelDecorated(true);
-        JFrame frame = new JFrame("Diagram UML");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame = new JFrame("Diagram UML");
+        frame.addWindowListener(listener);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         
         // Przygotowanie głównego panelu
-        OknoProgramu newContentPane = new OknoProgramu();
+        OknoProgramu newContentPane = this;
         newContentPane.setOpaque(true); 
         frame.setContentPane(newContentPane);
 
@@ -53,6 +56,7 @@ public class OknoProgramu extends JPanel {
         JMenu menuDiagram;
         JMenu menuPomoc;
         JMenuItem menuPlikZapisz;
+        JMenuItem menuPlikZapiszJako;
         JMenuItem menuPlikWczytaj;
         JMenuItem menuEdycjaCofnij;
         JMenuItem menuEdycjaPonow;
@@ -78,10 +82,12 @@ public class OknoProgramu extends JPanel {
         menuEdycja = new JMenu("Edycja");
         menuDiagram = new JMenu("Diagram");
         menuPomoc = new JMenu("Pomoc");
-        menuPlikWczytaj = new JMenuItem("Wczytaj");
+        menuPlikWczytaj = new JMenuItem("Otwórz");
         menuPlikZapisz = new JMenuItem("Zapisz");
+        menuPlikZapiszJako = new JMenuItem("Zapisz jako");
         menuPlik.add(menuPlikWczytaj);
         menuPlik.add(menuPlikZapisz);
+        menuPlik.add(menuPlikZapiszJako);
         menuEdycjaCofnij = new JMenuItem("Cofnij");
         menuEdycjaPonow = new JMenuItem("Ponów");
         menuEdycjaSzablon = new JMenuItem("Wstaw szablon");
@@ -139,12 +145,14 @@ public class OknoProgramu extends JPanel {
         add(panelGlowny, BorderLayout.CENTER);
         
         // Ustawienie listenera i komend akcji
-        KontrolerOkna listener = new KontrolerOkna(this, poleTekstowe, panelDiagramu, menuEdycjaCofnij, menuEdycjaPonow);
+        listener = new KontrolerOkna(this, poleTekstowe, panelDiagramu, menuEdycjaCofnij, menuEdycjaPonow);
         
         menuPlikWczytaj.setActionCommand("PlikWczytaj");
         menuPlikWczytaj.addActionListener(listener);
         menuPlikZapisz.setActionCommand("PlikZapisz");
         menuPlikZapisz.addActionListener(listener);
+        menuPlikZapiszJako.setActionCommand("PlikZapiszJako");
+        menuPlikZapiszJako.addActionListener(listener);
         menuEdycjaCofnij.setActionCommand("EdycjaCofnij");
         menuEdycjaCofnij.addActionListener(listener);
         menuEdycjaPonow.setActionCommand("EdycjaPonow");
@@ -168,7 +176,7 @@ public class OknoProgramu extends JPanel {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public void start() {
         
         javax.swing.SwingUtilities.invokeLater(new Runnable() {           
             @Override
@@ -176,5 +184,9 @@ public class OknoProgramu extends JPanel {
                 przygotujIPokazGUI();
             };
         });
+    }
+
+    JFrame pobierzRamke() {
+        return frame;
     }
 }

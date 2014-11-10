@@ -6,7 +6,11 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import model.Diagram;
 import javax.swing.JPanel;
@@ -379,6 +383,14 @@ public class PanelDiagramu extends JPanel {
         
         revalidate();
         repaint();
+    }
+
+    public void ekspotrujPlik(File wybranyPlik) throws IOException {
+        
+        BufferedImage zbuforowanyPlik = new BufferedImage(szerokoscSiatki*szerokoscKratki, wspolrzednaKonca, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = zbuforowanyPlik.createGraphics();
+        paint(g);
+        ImageIO.write(zbuforowanyPlik, "png", wybranyPlik);
     }
 }
 
