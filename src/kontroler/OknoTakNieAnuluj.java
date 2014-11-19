@@ -4,13 +4,17 @@
  */
 package kontroler;
 
+import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import model.JezykInterfejsu;
 
 /**
  *
@@ -18,37 +22,54 @@ import javax.swing.JLabel;
  */
 public class OknoTakNieAnuluj extends JDialog implements ActionListener {
           
+    private JezykInterfejsu jezyk;
     private String wynik;
     
     public String zwrocRezultat() {
         return wynik;
     }
     
-    public OknoTakNieAnuluj (JFrame oknoNadrzedne, String naglowek, String tresc) {
+    public OknoTakNieAnuluj (OknoProgramu elementNadrzedny, String naglowek, String tresc) {
         
-        super(oknoNadrzedne, naglowek, true);
+        super(elementNadrzedny.pobierzRamke(), naglowek, true);
+        jezyk = elementNadrzedny.pobierzJezyk();
         
         this.setSize(300, 200);
-        this.setLayout(new FlowLayout());
+        this.setLayout(new BorderLayout());
         
-        wynik = "";        
-        this.add(new JLabel(tresc));
+        JPanel panelPrzyciskow = new JPanel();
+        panelPrzyciskow.setLayout(new FlowLayout());
         
-        JButton tak = new JButton("Tak");
+        wynik = "anuluj";
+        
+        // Ustawienie komponentu wyświatlającego tekst w kilku liniach.
+        Font domyslnaCzcionkaKomunikatu = (new JLabel()).getFont();        
+        JTextArea poleTresci = new JTextArea(tresc);
+        poleTresci.setEditable(false);  
+        poleTresci.setCursor(null);  
+        poleTresci.setOpaque(false);  
+        poleTresci.setFocusable(false);
+        poleTresci.setLineWrap(true);
+        poleTresci.setWrapStyleWord(true);
+        poleTresci.setFont(domyslnaCzcionkaKomunikatu);
+        this.add(poleTresci, BorderLayout.CENTER);
+        
+        JButton tak = new JButton(jezyk.przyciskTak());
         tak.setActionCommand("tak");
         tak.addActionListener(this);
-        this.add(tak);
+        panelPrzyciskow.add(tak);
         
-        JButton nie = new JButton("Nie");
+        JButton nie = new JButton(jezyk.przyciskNie());
         nie.setActionCommand("nie");
         nie.addActionListener(this);
-        this.add(nie);
+        panelPrzyciskow.add(nie);
         
-        JButton anuluj = new JButton("Anuluj");
+        JButton anuluj = new JButton(jezyk.przyciskAnuluj());
         anuluj.setActionCommand("anuluj");
         anuluj.addActionListener(this);
-        this.add(anuluj);
+        panelPrzyciskow.add(anuluj);
         
+        this.add(panelPrzyciskow, BorderLayout.SOUTH);
     }
 
     @Override

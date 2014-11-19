@@ -24,8 +24,10 @@ public class DaneObiektu {
     /** Odnośnik do dodanego obiektu */
     Obiekt gotowyObiekt;   
     
+    int nrKomendy;
+    private JezykSkladni jezykS;
     
-    public DaneObiektu(List<AtrybutKomendy> listaAtrybutow) throws DiagramException {
+    public DaneObiektu(List<AtrybutKomendy> listaAtrybutow, JezykSkladni jezyk, int nrLinii) throws DiagramException {
         
         nazwa = null;
         nazwaSelektora = null;
@@ -33,6 +35,10 @@ public class DaneObiektu {
         identyfikator = null;
         listaPunktow = null;
         gotowyObiekt = null;
+        
+        nrKomendy = nrLinii;
+        jezykS = jezyk;
+        
         przetworz(listaAtrybutow);
     }
         
@@ -44,42 +50,42 @@ public class DaneObiektu {
             if (a.atrybutNazwy()) {                
                 // Atrybut nazwy obiektu
                 if (nazwa != null) {
-                    throw new DiagramException("Dwukrotna próba wprowadzenia nazwy obiektu.");
+                    throw new DiagramException(DiagramException.TypBledu.DWUKROTNA_DEFINICJA, a.nrLinii, a.identyfikator);
                 }
                 nazwa = a.cialo;                
             }
             else if (a.atrybutNazwyKlasy()) {
                 // Atrybyt nazwy klasy/selektora
                 if (nazwaSelektora != null) {
-                    throw new DiagramException("Dwukrotna próba wprowadzenia nazwy klasy obiektu.");
+                    throw new DiagramException(DiagramException.TypBledu.DWUKROTNA_DEFINICJA, a.nrLinii, a.identyfikator);
                 }
                 nazwaSelektora = a.cialo; 
             }
             else if (a.atrybutTypu()) {
                 // Atrybyt typu
                 if (typObiektu != null) {
-                    throw new DiagramException("Dwukrotna próba wprowadzenia typu obiektu.");
+                    throw new DiagramException(DiagramException.TypBledu.DWUKROTNA_DEFINICJA, a.nrLinii, a.identyfikator);
                 }
                 typObiektu = a.cialo; 
             }
             else if (a.atrybutIdentyfikatora()) {
                 // Atrybyt nazwy diagramu
                 if (identyfikator != null) {
-                    throw new DiagramException("Dwukrotna próba wprowadzenia nazwy identyfikatora.");
+                    throw new DiagramException(DiagramException.TypBledu.DWUKROTNA_DEFINICJA, a.nrLinii, a.identyfikator);
                 }
                 identyfikator = a.cialo;                
             }
             else if (a.atrybutZycia()) {
                 // Atrybyt nazwy diagramu
                 if (listaPunktow != null) {
-                    throw new DiagramException("Dwukrotna próba wprowadzenia nazwy identyfikatora.");
+                    throw new DiagramException(DiagramException.TypBledu.DWUKROTNA_DEFINICJA, a.nrLinii, a.identyfikator);
                 }
                 String[] nazwyPunktow = a.cialo.split("[,]");
                 if (nazwyPunktow.length < 2) {
-                    throw new DiagramException("Zbyt mała liczba punktów życia obiektu.");
+                    throw new DiagramException(DiagramException.TypBledu.BLEDNA_LICZBA_PUNKTOW, a.nrLinii, a.identyfikator);
                 }
                 else if ((nazwyPunktow.length % 2) == 1) {
-                    throw new DiagramException("Nieparzysta liczba punktów życia obiektu.");
+                    throw new DiagramException(DiagramException.TypBledu.BLEDNA_LICZBA_PUNKTOW, a.nrLinii, a.identyfikator);
                 }
                 else {
                     listaPunktow = Arrays.asList(nazwyPunktow);
@@ -88,13 +94,13 @@ public class DaneObiektu {
             }
             else {
                 //Nieznany atrybut - generuj wyjątek
-                throw new DiagramException ("Atrybut \"" + a.identyfikator + "\" nie jest prawidłowym atrybutem komunikatu.");
+                throw new DiagramException(DiagramException.TypBledu.NIEOCZEKIWANY_ATRYBUT, a.nrLinii, a.identyfikator);
             }
         }
         
         // Rozpatrzenie przypadków nieistniejących atrybutów
         if (nazwa == null) {
-            throw new DiagramException("Obiekt musi mieć podaną nazwę.");
+            throw new DiagramException(DiagramException.TypBledu.NIEZDEFINIOWANY_ATRYBUT_OBOWIAZKOWY, nrKomendy, jezykS.atrybutNazwa());
         }        
         if (nazwaSelektora == null) {
             nazwaSelektora = "";

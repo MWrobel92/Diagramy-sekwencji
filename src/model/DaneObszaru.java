@@ -29,7 +29,10 @@ public class DaneObszaru {
     /** Nazwa komunikatu, do wysokośći którego ma sięgać obszar */
     String nazwaKoncowego;
     
-    public DaneObszaru(List<AtrybutKomendy> listaAtrybutow) throws DiagramException {
+    int nrKomendy;
+    private JezykSkladni jezykS;
+    
+    public DaneObszaru(List<AtrybutKomendy> listaAtrybutow, JezykSkladni jezyk, int nrLinii) throws DiagramException {
         
         nazwa = null;
         identyfikator = null;
@@ -39,6 +42,10 @@ public class DaneObszaru {
         indeksWiersza = null;
         wysokoscBloku = null;        
         domyslnaRownoleglosc = true;
+        
+        nrKomendy = nrLinii;
+        jezykS = jezyk;
+        
         przetworz(listaAtrybutow);
     }
         
@@ -52,72 +59,72 @@ public class DaneObszaru {
             if (a.atrybutNazwy()) {
                 // Atrybyt nazwy diagramu
                 if (nazwa != null) {
-                    throw new DiagramException("Dwukrotna próba wprowadzenia nazwy obszaru.");
+                    throw new DiagramException(DiagramException.TypBledu.DWUKROTNA_DEFINICJA, a.nrLinii, a.identyfikator);
                 }
                 nazwa = a.cialo;                
             }
             else if (a.atrybutIdentyfikatora()) {
                 // Atrybyt nazwy diagramu
                 if (identyfikator != null) {
-                    throw new DiagramException("Dwukrotna próba wprowadzenia nazwy identyfikatora.");
+                    throw new DiagramException(DiagramException.TypBledu.DWUKROTNA_DEFINICJA, a.nrLinii, a.identyfikator);
                 }
                 identyfikator = a.cialo;                
             }
             else if (a.atrybutKomentarza()) {
                 // Atrybyt nazwy klasy
                 if (komentarz != null) {
-                    throw new DiagramException("Dwukrotna próba wprowadzenia komentarza obszaru.");
+                    throw new DiagramException(DiagramException.TypBledu.DWUKROTNA_DEFINICJA, a.nrLinii, a.identyfikator);
                 }
                 komentarz = a.cialo; 
             }
             else if (a.atrybutObiektuStartowego()) {
                 // Atrybyt obiektu początkowego
                 if (nazwaObiektu1 != null) {
-                    throw new DiagramException("Dwukrotna próba wprowadzenia obiektu początkowego.");
+                    throw new DiagramException(DiagramException.TypBledu.DWUKROTNA_DEFINICJA, a.nrLinii, a.identyfikator);
                 }
                 nazwaObiektu1 = a.cialo; 
             }
             else if (a.atrybutObiektuKoncowego()) {
                 // Atrybyt obiektu końcowego
                 if (nazwaObiektu2 != null) {
-                    throw new DiagramException("Dwukrotna próba wprowadzenia obiektu końcowego.");
+                    throw new DiagramException(DiagramException.TypBledu.DWUKROTNA_DEFINICJA, a.nrLinii, a.identyfikator);
                 }
                 nazwaObiektu2 = a.cialo; 
             }
             else if (a.atrybutWymuszeniaWiersza()) {
                 // Atrybyt wymuszenia wiersza
                 if (indeksWiersza != null) {
-                    throw new DiagramException("Dwukrotna próba wprowadzenia indeksu wiersza.");
+                    throw new DiagramException(DiagramException.TypBledu.DWUKROTNA_DEFINICJA, a.nrLinii, a.identyfikator);
                 }
                 
                 try {
                     indeksWiersza = Integer.parseInt(a.cialo);
                 }
                 catch (NumberFormatException ex) {
-                    throw new DiagramException ("Wartość: " + a.cialo + " nie jest liczbą.");
+                    throw new DiagramException(DiagramException.TypBledu.WARTOSC_NIELICZBOWA, a.nrLinii, a.identyfikator, a.cialo);
                 }
                 
                 if (indeksWiersza < 0) {
-                    throw new DiagramException ("Numer wiersza nie może być ujemny.");
+                    throw new DiagramException(DiagramException.TypBledu.WARTOSC_UJEMNA, a.nrLinii, a.identyfikator, a.cialo);
                 }
             }
             else if (a.atrybutWysokosciBloku()) {
                 // Atrybyt wymuszenia wiersza
                 if (wysokoscBloku != null) {
-                    throw new DiagramException("Dwukrotna próba wprowadzenia indeksu wiersza.");
+                    throw new DiagramException(DiagramException.TypBledu.DWUKROTNA_DEFINICJA, a.nrLinii, a.identyfikator);
                 }
                 
                 try {
                     wysokoscBloku = Integer.parseInt(a.cialo);
                 }
                 catch (NumberFormatException ex) {
-                    throw new DiagramException ("Wartość: " + a.cialo + " nie jest liczbą.");
+                    throw new DiagramException(DiagramException.TypBledu.WARTOSC_NIELICZBOWA, a.nrLinii, a.identyfikator, a.cialo);
                 }
             }
             else if (a.atrybutWymuszeniaRownoleglosci()) {
                 // Atrybyt wymuszenia wiersza
                 if (zdefiniowanaDomyslnaRownoleglosc) {
-                    throw new DiagramException("Dwukrotna próba zdefiniowania równoległości.");
+                    throw new DiagramException(DiagramException.TypBledu.DWUKROTNA_DEFINICJA, a.nrLinii, a.identyfikator);
                 }
                 
                 zdefiniowanaDomyslnaRownoleglosc = true;
@@ -127,7 +134,7 @@ public class DaneObszaru {
                 
                 // Atrybyt wymuszenia wiersza
                 if (nazwaRownoleglego != null) {
-                    throw new DiagramException("Dwukrotna próba wprowadzenia nazwy elementu równoległego.");
+                    throw new DiagramException(DiagramException.TypBledu.DWUKROTNA_DEFINICJA, a.nrLinii, a.identyfikator);
                 }
                 else {
                     nazwaRownoleglego = a.cialo;
@@ -137,7 +144,7 @@ public class DaneObszaru {
                 
                 // Atrybyt wymuszenia wiersza
                 if (nazwaKoncowego != null) {
-                    throw new DiagramException("Dwukrotna próba wprowadzenia nazwy elementu równoległego.");
+                    throw new DiagramException(DiagramException.TypBledu.DWUKROTNA_DEFINICJA, a.nrLinii, a.identyfikator);
                 }
                 else {
                     nazwaKoncowego = a.cialo;
@@ -145,19 +152,19 @@ public class DaneObszaru {
             }
             else {
                 //Nieznany atrybut - generuj wyjątek
-                throw new DiagramException ("Atrybut \"" + a.identyfikator + "\" nie jest prawidłowym atrybutem obszaru wydzielonego.");
+                throw new DiagramException (DiagramException.TypBledu.NIEOCZEKIWANY_ATRYBUT, a.nrLinii, a.identyfikator);
             }
         }
         
         // Rozpatrzenie przypadków nieistniejących atrybutów
         if (nazwa == null) {
-            throw new DiagramException("Obszar wydzielony musi mieć zdefiniowaną etykietę.");
+            throw new DiagramException(DiagramException.TypBledu.NIEZDEFINIOWANY_ATRYBUT_OBOWIAZKOWY, nrKomendy, jezykS.atrybutNazwa());
         }
         if (nazwaObiektu1 == null) {
-            throw new DiagramException("Obszar wydzielony musi mieć zdefiniowany obiekt początkowy.");
+            throw new DiagramException(DiagramException.TypBledu.NIEZDEFINIOWANY_ATRYBUT_OBOWIAZKOWY, nrKomendy, jezykS.atrybutObiektuStartowego());
         }
         if (nazwaObiektu2 == null) {
-            throw new DiagramException("Obszar wydzielony musi mieć zdefiniowany obiekt końcowy.");
+            throw new DiagramException(DiagramException.TypBledu.NIEZDEFINIOWANY_ATRYBUT_OBOWIAZKOWY, nrKomendy, jezykS.atrybutObiektuKoncowego());
         } 
 
     }    

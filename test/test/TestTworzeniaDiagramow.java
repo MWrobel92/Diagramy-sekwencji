@@ -4,6 +4,7 @@ package test;
 
 import model.Diagram;
 import model.DiagramException;
+import model.JezykSkladniPolski;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -15,7 +16,7 @@ public class TestTworzeniaDiagramow {
     
     public static Diagram utworzPrzykladowyDiagram() throws DiagramException {
         
-        Diagram diagram = new Diagram();
+        Diagram diagram = new Diagram(new JezykSkladniPolski());
         diagram.ustawNazwe("Diagram testowy");
         diagram.dodajObiekt("Pierwszy obiekt", "", "Użytkownik");
         diagram.dodajObiekt("Drugi obiekt", "Cośtam", "Klasa");
@@ -51,7 +52,7 @@ public class TestTworzeniaDiagramow {
     @Test
     public void blednyDiagramTest() {
            
-        Diagram diagram = new Diagram();
+        Diagram diagram = new Diagram(new JezykSkladniPolski());
         
         //Rzeczy poprawne
         try {

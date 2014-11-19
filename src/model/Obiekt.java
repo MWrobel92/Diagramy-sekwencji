@@ -17,6 +17,8 @@ public class Obiekt extends ElementDiagramu {
     private int przesuniecieKonca;
     
     private LinkedList<Integer> czasZycia;
+    
+    int liniaKodu;
         
     public void ustawPrzesuniecieNaglowka(int przesuniecieNaglowka) {
         this.przesuniecieNaglowka = przesuniecieNaglowka;
@@ -53,9 +55,10 @@ public class Obiekt extends ElementDiagramu {
         this.nazwa = "";
         this.nazwaSelektora = "";
         this.typObiektu = ObiektTyp.PUNKT_SPECJALNY;
+        this.liniaKodu = 0;
     }
     
-    public Obiekt (String nazwaKlasy, String nazwaSelektora, ObiektTyp typObiektu) {
+    public Obiekt (String nazwaKlasy, String nazwaSelektora, ObiektTyp typObiektu, int liniaKodu) {
         
         this.nazwa = nazwaKlasy;
         this.nazwaSelektora = nazwaSelektora;
@@ -110,7 +113,7 @@ public class Obiekt extends ElementDiagramu {
             czasZycia = przygotowanaLista;
         }
         else {
-            throw new DiagramException("Brakuje czasu zakończenia działania obiektu o nazwie " + nazwa);
+            throw new DiagramException(DiagramException.TypBledu.BLEDNA_LICZBA_PUNKTOW, liniaKodu, nazwa);
         }
     }
 

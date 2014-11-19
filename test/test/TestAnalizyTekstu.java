@@ -1,10 +1,10 @@
 package test;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import model.AnalizatorTekstu;
 import model.DiagramException;
+import model.JezykInterfejsuPolski;
+import model.JezykSkladniPolski;
 import model.Komenda;
 import static org.junit.Assert.fail;
 import static org.junit.Assert.assertEquals;
@@ -18,7 +18,8 @@ import org.junit.Test;
 public class TestAnalizyTekstu {
     
     public List<Komenda> przygotujKomendy(String tekst) throws DiagramException {
-        return AnalizatorTekstu.wyodrebnijKomendy(tekst);
+        AnalizatorTekstu analizatorTekstu = new AnalizatorTekstu(new JezykSkladniPolski());
+        return analizatorTekstu.wyodrebnijKomendy(tekst);
     }
     
     @Test
@@ -35,7 +36,7 @@ public class TestAnalizyTekstu {
     
         }
         catch (DiagramException ex) {
-            fail("Złapano wyjątek:" + ex.opisBledu);
+            fail("Złapano wyjątek:" + ex.wypiszBlad(new JezykInterfejsuPolski()));
         }
         
     }
@@ -62,9 +63,10 @@ public class TestAnalizyTekstu {
     @Test
     public void utworzDiagramNaPostrawieTekstu() {
         try {
-            AnalizatorTekstu.przygotujDiagram("obiekt{nazwa=ssad} \nkomunikat{nazwa=\"dvfdv\" tekst=\"aa\\\"a{}\"}obszar{nazwa=fsdf od=ssad do=ssad typ=\"użytkownik\"}");
+            AnalizatorTekstu analizatorTekstu = new AnalizatorTekstu(new JezykSkladniPolski());
+            analizatorTekstu.przygotujDiagram("obiekt{nazwa=ssad} \nkomunikat{nazwa=\"dvfdv\" }obszar{nazwa=fsdf od=ssad do=ssad typ=\"użytkownik\"}");
         } catch (DiagramException ex) {
-            fail("Przechwycono wyjątek: " + ex.opisBledu);
+            fail("Przechwycono wyjątek: " + ex.wypiszBlad(new JezykInterfejsuPolski()));
         }
         
     }

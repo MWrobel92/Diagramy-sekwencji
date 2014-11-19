@@ -35,42 +35,42 @@ public class DaneDiagramu {
             if (a.atrybutNazwy()) {
                 // Atrybyt nazwy diagramu
                 if (nazwa != null) {
-                    throw new DiagramException("Dwukrotna próba wprowadzenia nazwy.");
+                    throw new DiagramException(DiagramException.TypBledu.DWUKROTNA_DEFINICJA, a.nrLinii, a.identyfikator);
                 }
                 nazwa = a.cialo;
             }
             else if (a.atrybutSzerokosci()) {
                 // Atrybut szerokośći kolumny
                 if (szerokosc != null) {
-                    throw new DiagramException("Dwukrotna próba wprowadzenia szerokości kolumny.");
+                    throw new DiagramException(DiagramException.TypBledu.DWUKROTNA_DEFINICJA, a.nrLinii, a.identyfikator);
                 }
                 
                 try {
                     szerokosc = Integer.parseInt(a.cialo);
                 }
                 catch (NumberFormatException ex) {
-                    throw new DiagramException ("Wartość: " + a.cialo + " nie jest liczbą.");
+                    throw new DiagramException (DiagramException.TypBledu.WYMAGANA_LICZBA, a.nrLinii, a.identyfikator, a.cialo);
                 }
                 
                 if (szerokosc < 50) {
-                    throw new DiagramException ("Szerokość wiersza nie możę być mniejsza niż 50 (odczytano" + a.cialo + ").");
+                    throw new DiagramException (DiagramException.TypBledu.PONIZEJ_50, a.nrLinii, a.identyfikator, a.cialo);
                 }
             }
             else if (a.atrybutWysokosci()) {
                 // Atrybut wysokośći kolumny
                 if (wysokosc != null) {
-                    throw new DiagramException("Dwukrotna próba wprowadzenia wysokości wiersza.");
+                    throw new DiagramException(DiagramException.TypBledu.DWUKROTNA_DEFINICJA, a.nrLinii, a.identyfikator);
                 }
                 
                 try {
                     wysokosc = Integer.parseInt(a.cialo);
                 }
                 catch (NumberFormatException ex) {
-                    throw new DiagramException ("Wartość: " + a.cialo + " nie jest liczbą.");
+                    throw new DiagramException (DiagramException.TypBledu.WYMAGANA_LICZBA, a.nrLinii, a.identyfikator, a.cialo);
                 }
                 
                 if (szerokosc < 50) {
-                    throw new DiagramException ("Szerokość wiersza nie możę być mniejsza niż 50 (odczytano " + a.cialo + ").");
+                    throw new DiagramException (DiagramException.TypBledu.PONIZEJ_50, a.nrLinii, a.identyfikator, a.cialo);
                 }
             }  
             

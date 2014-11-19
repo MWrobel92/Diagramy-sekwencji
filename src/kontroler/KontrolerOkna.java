@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.util.LinkedList;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.event.CaretEvent;
@@ -27,6 +26,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import model.AnalizatorTekstu;
 import model.Diagram;
 import model.DiagramException;
+import model.JezykInterfejsu;
+import model.JezykSkladni;
+import model.JezykSkladniPolski;
 import widok.PanelDiagramu;
 
 /**
@@ -35,13 +37,17 @@ import widok.PanelDiagramu;
  */
 public class KontrolerOkna implements ActionListener, CaretListener, WindowListener {
     
+    //Deklaracje elementów nadrzędnych
+    private JezykInterfejsu jezyk;
+    private JezykSkladni jezykS;
+    private OknoProgramu elementNadrzedny;
+    
     //Deklaracje kontrolek, do których listener musi mieć dostęp.
     private JTextArea poleTekstowe;
+    private JTextArea poleKonsoli;
     private PanelDiagramu panelDiagramu;
     private JComponent przyciskCofania;
     private JComponent przyciskPonawiania;
-    
-    private OknoProgramu elementNadrzedny;
     
     //Deklaracje list z historią zmian
     private LinkedList<String> listaCofania;
@@ -62,10 +68,15 @@ public class KontrolerOkna implements ActionListener, CaretListener, WindowListe
      * @param przyciskCofnij
      * @param przyciskPonow 
      */
-    public KontrolerOkna (OknoProgramu elementNadrzedny, JTextArea poleTekstowe, PanelDiagramu panelDiagramu, JComponent przyciskCofnij, JComponent przyciskPonow) {
+    public KontrolerOkna (OknoProgramu elementNadrzedny, JTextArea poleTekstowe, PanelDiagramu panelDiagramu, JComponent przyciskCofnij, JComponent przyciskPonow, JTextArea poleKonsoli) {
         
         this.elementNadrzedny = elementNadrzedny;
         
+        jezyk = elementNadrzedny.pobierzJezyk();
+        jezykS = new JezykSkladniPolski();
+        
+        this.poleKonsoli = poleKonsoli;
+                
         this.poleTekstowe = poleTekstowe;
         this.panelDiagramu = panelDiagramu;
         this.przyciskCofania = przyciskCofnij;
@@ -103,32 +114,45 @@ public class KontrolerOkna implements ActionListener, CaretListener, WindowListe
             case "EdycjaCofnij":
                 listaPonawiania.add(poprzedniTekst);
                 poprzedniTekst = listaCofania.pollLast();
+                poleTekstowe.removeCaretListener(this);
                 poleTekstowe.setText(poprzedniTekst);
+                uruchomGenerowanieDiagramu();
+                poleTekstowe.addCaretListener(this);
                 ustawWidocznoscCofania();
                 break;
             case "EdycjaPonow":
                 listaCofania.add(poprzedniTekst);
                 poprzedniTekst = listaPonawiania.pollLast();
+                poleTekstowe.removeCaretListener(this);
                 poleTekstowe.setText(poprzedniTekst);
+                uruchomGenerowanieDiagramu();
+                poleTekstowe.addCaretListener(this);
                 ustawWidocznoscCofania();
                 break;
-            case "EdycjaSzablon":
-                //TODO: Obsługa zdarzenia.
-                break;
             case "EdycjaWstawAktora":
-                //TODO: Obsługa zdarzenia.
+                dopiszUczestnika();
                 break;
             case "EdycjaWstawKomunikat":
-                //TODO: Obsługa zdarzenia.
+                dopiszKomunikat();
                 break;
             case "EdycjaWstawObszar":
-                //TODO: Obsługa zdarzenia.
+                dopiszObszar();
+                break;
+            case "OpcjeJezyk" :
+                ustawieniaJezyka();
                 break;
             case "DiagramGeneruj" :
-                generujDiagram();
+                generujDiagram(true);
                 break;
             case "DiagramZapisz" :
                 eksportujDiagram();
+                break;
+            case "PomocPomoc" :
+                OknoPomocy pomoc = new OknoPomocy(jezyk, jezykS);
+                pomoc.setVisible(true);
+                break;
+            case "PomocOProgramie" :
+                JOptionPane.showMessageDialog(elementNadrzedny, jezyk.pomocOProgramie(), jezyk.menuPomocOProgramie(), JOptionPane.INFORMATION_MESSAGE);
                 break;
         }
     }
@@ -138,9 +162,18 @@ public class KontrolerOkna implements ActionListener, CaretListener, WindowListe
               
         String aktualnyTekst = poleTekstowe.getText();
         if (!aktualnyTekst.equals(poprzedniTekst)) {
+            
+            // Generowanie diagramu (w osobnym wątku)
+            if (elementNadrzedny.autoodswiezanie()) {
+                uruchomGenerowanieDiagramu();
+            }
+            
+            // Obsługa cofania
             listaCofania.add(poprzedniTekst);
+            listaPonawiania.clear();
             poprzedniTekst = aktualnyTekst;
             ustawWidocznoscCofania();
+          
         }
         
     }
@@ -162,14 +195,25 @@ public class KontrolerOkna implements ActionListener, CaretListener, WindowListe
         }
         
     }
-
-    private void generujDiagram() {
+    
+    /**
+     * 
+     * @param oknoPotwierdzenia Jeśli true, wystąpienie błędu będzie zasygnalizowane messageboksem.
+     */    
+    private void generujDiagram(boolean oknoPotwierdzenia) {
         
         try {
-            Diagram modelDiagramu = AnalizatorTekstu.przygotujDiagram(poleTekstowe.getText());
+            AnalizatorTekstu analizator = new AnalizatorTekstu(jezykS);
+           
+            Diagram modelDiagramu = analizator.przygotujDiagram(poleTekstowe.getText());
             panelDiagramu.ladujPonownie(modelDiagramu);
+            poleKonsoli.setText(jezyk.komunikatPoprawnaKompilacja());
+            
         } catch (DiagramException ex) {
-            JOptionPane.showMessageDialog(elementNadrzedny, ex.opisBledu);
+            poleKonsoli.setText(ex.wypiszBlad(jezyk));
+            if (oknoPotwierdzenia) {
+                JOptionPane.showMessageDialog(elementNadrzedny, jezyk.oknoBladKompilacji(), jezyk.bladNaglowek(), JOptionPane.WARNING_MESSAGE);
+            }                        
         }
     }
     
@@ -218,7 +262,7 @@ public class KontrolerOkna implements ActionListener, CaretListener, WindowListe
                 plikZostalWczytany = true;
             }
             catch (IOException ex) {
-                JOptionPane.showMessageDialog(elementNadrzedny, "Problem z wczytaniem pliku.");
+                JOptionPane.showMessageDialog(elementNadrzedny, jezyk.oknoBladWczytania());
             }
         }
         
@@ -238,7 +282,7 @@ public class KontrolerOkna implements ActionListener, CaretListener, WindowListe
             plikZostalZapisany = true;
         }
         catch (IOException ex) {
-            JOptionPane.showMessageDialog(elementNadrzedny, "Problem z zapisaniem pliku.");
+            JOptionPane.showMessageDialog(elementNadrzedny, jezyk.oknoBladZapisu());
         }
     
         return plikZostalZapisany;
@@ -275,7 +319,7 @@ public class KontrolerOkna implements ActionListener, CaretListener, WindowListe
                 plikZostalZapisany = true;
             }
             catch (IOException ex) {
-                JOptionPane.showMessageDialog(elementNadrzedny, "Problem z zapisaniem pliku.");
+                JOptionPane.showMessageDialog(elementNadrzedny, jezyk.oknoBladZapisu());
             }
         }
         
@@ -291,12 +335,7 @@ public class KontrolerOkna implements ActionListener, CaretListener, WindowListe
         oknoObslugiPliku = new JFileChooser(); 
         
         oknoEksportuDiagramu = new JFileChooser();
-        FileFilter filtrJpg = new FileNameExtensionFilter("Plik JPG", "jpg", "jpeg");
         FileFilter filtrPng = new FileNameExtensionFilter("Plik PNG", "png");
-        FileFilter filtrGif = new FileNameExtensionFilter("Plik GIF", "gif");
-      
-        oknoEksportuDiagramu.setFileFilter(filtrGif);
-        oknoEksportuDiagramu.setFileFilter(filtrJpg);
         oknoEksportuDiagramu.setFileFilter(filtrPng);
         
     }
@@ -315,7 +354,7 @@ public class KontrolerOkna implements ActionListener, CaretListener, WindowListe
             kontynuuj = true;
         }
         else {            
-            OknoTakNieAnuluj oknoDialogowe = new OknoTakNieAnuluj(elementNadrzedny.pobierzRamke(), "Zapisz plik", "Są niezapisane zmiany");
+            OknoTakNieAnuluj oknoDialogowe = new OknoTakNieAnuluj(elementNadrzedny, jezyk.oknoNiezapisaneNaglowek(), jezyk.onkoNiezapisaneTresc());
             oknoDialogowe.setVisible(true);
             
             switch (oknoDialogowe.zwrocRezultat()) {
@@ -378,5 +417,81 @@ public class KontrolerOkna implements ActionListener, CaretListener, WindowListe
     public void windowDeactivated(WindowEvent e) {
         //Niepotrzebne
     }
-  
+
+    private void dopiszUczestnika() {
+        
+        StringBuilder komenda = new StringBuilder("\n");
+        komenda.append(jezykS.komendaObiekt());
+        komenda.append('{');
+        komenda.append(jezykS.atrybutNazwa());
+        komenda.append('=');
+        komenda.append(jezykS.przykladNazwy());
+        komenda.append(' ');
+        komenda.append(jezykS.atrybutTyp());
+        komenda.append('=');
+        komenda.append(jezykS.typKlasa());
+        komenda.append("}\n");        
+        poleTekstowe.append(komenda.toString());
+        
+    }
+
+    private void dopiszKomunikat() {
+        StringBuilder komenda = new StringBuilder("\n");
+        komenda.append(jezykS.komendaKomunikat());
+        komenda.append('{');
+        komenda.append(jezykS.atrybutNazwa());
+        komenda.append('=');
+        komenda.append(jezykS.przykladNazwy());
+        komenda.append(' ');
+        komenda.append(jezykS.atrybutTyp());
+        komenda.append('=');
+        komenda.append(jezykS.typWywolanie());
+        komenda.append(' ');
+        komenda.append(jezykS.atrybutObiektuStartowego());
+        komenda.append('=');
+        komenda.append(jezykS.przykladNazwy());
+        komenda.append(' ');
+        komenda.append(jezykS.atrybutObiektuKoncowego());
+        komenda.append('=');
+        komenda.append(jezykS.przykladNazwy());
+        komenda.append("}\n");        
+        poleTekstowe.append(komenda.toString());}
+
+    private void dopiszObszar() {
+        StringBuilder komenda = new StringBuilder("\n");
+        komenda.append(jezykS.komendaObszar());
+        komenda.append('{');
+        komenda.append(jezykS.atrybutNazwa());
+        komenda.append('=');
+        komenda.append(jezykS.przykladNazwy());
+        komenda.append(' ');
+        komenda.append(jezykS.atrybutObiektuStartowego());
+        komenda.append('=');
+        komenda.append(jezykS.przykladNazwy());
+        komenda.append(' ');
+        komenda.append(jezykS.atrybutObiektuKoncowego());
+        komenda.append('=');
+        komenda.append(jezykS.przykladNazwy());
+        komenda.append("}\n");        
+        poleTekstowe.append(komenda.toString());
+    }
+
+    private void ustawieniaJezyka() {
+        OknoUstawienJezyka okno = new OknoUstawienJezyka(elementNadrzedny, jezyk.menuOpcjeJezyk(), jezyk);
+        okno.setVisible(true);
+        if (okno.zatwierdzono()) {
+            elementNadrzedny.ustawJezyk(okno.pobierzJezykInterfejsu());
+            jezykS = okno.pobierzJezykSkladni();
+        }
+    }
+
+    private void uruchomGenerowanieDiagramu() {
+        Thread watek = new Thread(new Runnable() {                
+                    
+            @Override
+                public void run() {
+                    generujDiagram(false);
+                };
+            });
+            watek.start();}
 }

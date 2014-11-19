@@ -8,9 +8,19 @@ import java.util.LinkedList;
  */
 public class AnalizatorTekstu {
     
-    public static LinkedList<Komenda> wyodrebnijKomendy (String tekstWejsciowy) throws DiagramException {
+    private JezykSkladni jezykS;
+
+    public AnalizatorTekstu(JezykSkladni jezyk) {
+        jezykS = jezyk;
+    }
+    
+    public LinkedList<Komenda> wyodrebnijKomendy (String tekstWejsciowy) throws DiagramException {
+        
+        tekstWejsciowy = tekstWejsciowy + ' '; // Żeby zawsze kończyło się białym znakiem
         
         LinkedList<Komenda> komendy = new LinkedList<>();
+        int nrLinii = 1;
+        int nrLiniiPoczatkuKomendy = 0;
         
         StringBuilder bufor = new StringBuilder();        
         String tymczasowyIdentyfikator = "";
@@ -24,7 +34,12 @@ public class AnalizatorTekstu {
         
         for(char c : tekstWejsciowy.toCharArray()) {
             
+            if (c == '\n') {
+                    ++nrLinii;
+            };
+                
             if (ignorujKolejnyZnak) {
+                
                 bufor.append(c);
                 ignorujKolejnyZnak = false;
                 continue;
@@ -49,13 +64,14 @@ public class AnalizatorTekstu {
                 if (c == '{') {
                     //Zapisujemy identyfikator i przechodzimy do ciała pętli
                     tymczasowyIdentyfikator = bufor.toString();
+                    nrLiniiPoczatkuKomendy = nrLinii;
                     bufor = new StringBuilder();
                     wnetrzeIdentyfikatora = false;
                     wnetrzeCiala = true;
                 }
                 else if (Character.isWhitespace(c)) {
                     //Zapisujemy identyfikator bez paramentrów
-                    komendy.add(new Komenda(bufor.toString(), ""));
+                    komendy.add(new Komenda(bufor.toString(), "", nrLiniiPoczatkuKomendy, jezykS));
                     bufor = new StringBuilder();
                     wnetrzeIdentyfikatora = false;
                     continue;
@@ -93,7 +109,7 @@ public class AnalizatorTekstu {
                         
                         if (liczbaKlamerZagniezdzonych == 0) {
                             //KONIEC KOMENDY - zapisujemy ją
-                            komendy.add(new Komenda(tymczasowyIdentyfikator, bufor.toString()));
+                            komendy.add(new Komenda(tymczasowyIdentyfikator, bufor.toString(), nrLiniiPoczatkuKomendy, jezykS));
                             bufor = new StringBuilder();
                             wnetrzeCiala = false;
                             continue;
@@ -120,35 +136,42 @@ public class AnalizatorTekstu {
         }
         
         if (wnetrzeCiala) {
-            throw new DiagramException("Błąd składni - brak klamry zamykającej.");
+            throw new DiagramException(DiagramException.TypBledu.SKLADNIA, nrLinii, "}");
         }
         else if (wnetrzeNapisu || ignorujKolejnyZnak) {
-            throw new DiagramException("Błąd składni - brak nawiasu zamykającego napis.");
+            throw new DiagramException(DiagramException.TypBledu.SKLADNIA, nrLinii, "\"");
+        }
+        else if (wnetrzeKomentarza) {
+            throw new DiagramException(DiagramException.TypBledu.SKLADNIA, nrLinii, "*");
         }
              
         return komendy;
     }
     
-    public static Diagram przygotujDiagram (String tekstWejsciowy) throws DiagramException {
+    public Diagram przygotujDiagram (String tekstWejsciowy) throws DiagramException {
         
-        Diagram diagram = new Diagram();
+        Diagram diagram = new Diagram(jezykS);
         
         for (Komenda k : wyodrebnijKomendy(tekstWejsciowy)) {
             
             if (k.dotyczyDiagramu()) {
-                przetworzKomendeDiagramu(k.przygotujListeAtrybutow(), diagram);                
+                DaneDiagramu dane = new DaneDiagramu(k.przygotujListeAtrybutow());
+                if (dane.nazwa != null) {
+                    diagram.ustawNazwe(dane.nazwa);
+                }
+                diagram.ustawWymiary(dane.szerokosc, dane.wysokosc);               
             }
             else if (k.dotyczyObiektu()) {
-                przetworzKomendeObiektu(k.przygotujListeAtrybutow(), diagram);
+                diagram.dodajObiekt(new DaneObiektu(k.przygotujListeAtrybutow(), jezykS, k.nrLinii));
             }
             else if (k.dotyczyKomunikatu()) {
-                przetworzKomendeKomunikatu(k.przygotujListeAtrybutow(), diagram);
+                diagram.dodajKomunikat(new DaneKomunikatu(k.przygotujListeAtrybutow(), jezykS, k.nrLinii));
             }
             else if (k.dotyczyObszaru()) {
-                przetworzKomendeObszaru(k.przygotujListeAtrybutow(), diagram);
+                diagram.dodajObszarWydzielony(new DaneObszaru(k.przygotujListeAtrybutow(), jezykS, k.nrLinii));
             }
             else {
-                throw new DiagramException("Identyfikator komendy \"" + k.identyfikator + "\" jest niprawidłowy."); 
+                throw new DiagramException(DiagramException.TypBledu.NIEISTNIEJACA_KOMENDA, k.nrLinii, k.identyfikator); 
             }
             
         }
@@ -156,28 +179,5 @@ public class AnalizatorTekstu {
         diagram.ustawCzasyZyciaObiektow();
         return diagram;
         
-    }
-
-    private static void przetworzKomendeDiagramu(LinkedList<AtrybutKomendy> atrybuty, Diagram diagram) throws DiagramException {
-          
-        DaneDiagramu dane = new DaneDiagramu(atrybuty);
-        if (dane.nazwa != null) {
-            diagram.ustawNazwe(dane.nazwa);
-        }
-        diagram.ustawWymiary(dane.szerokosc, dane.wysokosc);
-        
-    }
-
-    private static void przetworzKomendeObiektu(LinkedList<AtrybutKomendy> atrybuty, Diagram diagram) throws DiagramException {
-        diagram.dodajObiekt(new DaneObiektu(atrybuty));
-    }
-
-    private static void przetworzKomendeKomunikatu(LinkedList<AtrybutKomendy> atrybuty, Diagram diagram) throws DiagramException {
-        diagram.dodajKomunikat(new DaneKomunikatu(atrybuty));
-    }
-
-    private static void przetworzKomendeObszaru(LinkedList<AtrybutKomendy> atrybuty, Diagram diagram) throws DiagramException {           
-        diagram.dodajObszarWydzielony(new DaneObszaru(atrybuty));
-    }
-    
+    }    
 }

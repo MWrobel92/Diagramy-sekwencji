@@ -10,10 +10,14 @@ public class Komenda {
     
     String identyfikator;
     String cialo;
+    JezykSkladni jezyk;
+    int nrLinii;
     
-    public Komenda (String identyfikator, String cialo) {
+    public Komenda (String identyfikator, String cialo, int nrLinii, JezykSkladni jezyk) {
         this.identyfikator = identyfikator;
-        this.cialo = cialo;
+        this.cialo = cialo + ' '; // Żeby zawsze kończyło się białym znakiem
+        this.jezyk = jezyk;
+        this.nrLinii = nrLinii;
     }
     
     @Override
@@ -22,19 +26,19 @@ public class Komenda {
     }
     
     public boolean dotyczyDiagramu() {
-        return identyfikator.equals("diagram");
+        return identyfikator.equals(jezyk.komendaDiagram());
     }
     
     public boolean dotyczyObiektu() {
-        return identyfikator.equals("obiekt");
+        return identyfikator.equals(jezyk.komendaObiekt());
     }
     
     public boolean dotyczyKomunikatu() {
-        return identyfikator.equals("komunikat");
+        return identyfikator.equals(jezyk.komendaKomunikat());
     }
     
     public boolean dotyczyObszaru() {
-        return identyfikator.equals("obszar");
+        return identyfikator.equals(jezyk.komendaObszar());
     }
     
     public LinkedList<AtrybutKomendy> przygotujListeAtrybutow () {
@@ -53,6 +57,10 @@ public class Komenda {
         
         for(char c : cialo.toCharArray()) {
             
+            if (c == '\n') {
+                    ++nrLinii;
+            };
+            
             if (ignorujKolejnyZnak) {
                 bufor.append(c);
                 ignorujKolejnyZnak = false;
@@ -63,7 +71,7 @@ public class Komenda {
                 
                 if (Character.isWhitespace(c)) {
                     //Zapisujemy identyfikator z pustym ciałem
-                    atrybuty.add(new AtrybutKomendy(bufor.toString(), ""));
+                    atrybuty.add(new AtrybutKomendy(bufor.toString(), "", nrLinii, jezyk));
                     bufor = new StringBuilder();
                     wnetrzeIdentyfikatora = false;
                 }
@@ -106,7 +114,7 @@ public class Komenda {
                     else if ((bufor.length() != 0)&&(Character.isWhitespace(c))&&(liczbaKlamerZagniezdzonych==0)) {
                         //KONIEC ATRYBUTU
                         wnetrzeTresci = false;
-                        atrybuty.add(new AtrybutKomendy(tymczasowyIdentyfikator, bufor.toString()));
+                        atrybuty.add(new AtrybutKomendy(tymczasowyIdentyfikator, bufor.toString(), nrLinii, jezyk));
                         bufor = new StringBuilder();
                         continue;
                     } 
@@ -121,7 +129,7 @@ public class Komenda {
         }
         
         if (wnetrzeTresci) {
-            atrybuty.add(new AtrybutKomendy(tymczasowyIdentyfikator, bufor.toString()));
+            atrybuty.add(new AtrybutKomendy(tymczasowyIdentyfikator, bufor.toString(), nrLinii, jezyk));
         }
         
         return atrybuty;

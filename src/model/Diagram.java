@@ -10,6 +10,7 @@ import java.util.LinkedList;
 public class Diagram {
     
     private String nazwa;
+    private JezykSkladni jezyk;
     
     private LinkedList<Obiekt> listaObiektow;
     private LinkedList<Komunikat> listaKomunikatow;
@@ -21,11 +22,12 @@ public class Diagram {
     
     private LinkedList<String> listaOstrzezen;
     
-    /** LIsta danych dodanych obiektów - zapamiętana, żeby dało się ustalić czasy życia */
+    /** Lista danych dodanych obiektów - zapamiętana, żeby dało się ustalić czasy życia */
     private LinkedList<DaneObiektu> daneDodawanychObiektow;
     
     private Integer wysokoscWiersza;
     private Integer szerokoscKolumny;
+
     
     /**
      * Akcesor do nazwy diagramu
@@ -115,7 +117,7 @@ public class Diagram {
             
             for (Obiekt o : listaObiektow) {
                 if (o.id().equals(dane.identyfikator)) {
-                    throw new DiagramException("Istnieje już obiekt, który używa identyfikatora " + dane.identyfikator);
+                    throw new DiagramException(DiagramException.TypBledu.POWTORZONY_IDENTYFIKATOR_OBIEKTU, dane.nrKomendy, dane.identyfikator);
                 }
             }
             idDoUstawienia = true;
@@ -125,12 +127,12 @@ public class Diagram {
             //Trzeba sprawdzić, czy coś nie ma takiego identyfikatora, jak nasza nazwa
             for (Obiekt o : listaObiektow) {
                 if (o.identyfikatorMocny() && o.id().equals(dane.nazwa)) {
-                    throw new DiagramException("Istnieje już obiekt, który używa identyfikatora " + dane.nazwa);
+                    throw new DiagramException(DiagramException.TypBledu.POWTORZONY_IDENTYFIKATOR_OBIEKTU, dane.nrKomendy, dane.nazwa);
                 }
             }
         }
         
-        Obiekt nowy = dodajObiekt(dane.nazwa, dane.nazwaSelektora, dane.typObiektu);
+        Obiekt nowy = dodajObiekt(dane.nazwa, dane.nazwaSelektora, dane.typObiektu, dane.nrKomendy);
         
         if (idDoUstawienia) {
             nowy.ustawId(dane.identyfikator);
@@ -140,26 +142,25 @@ public class Diagram {
         daneDodawanychObiektow.add(dane);
     }
     
-    public Obiekt dodajObiekt(String nazwaKlasy, String nazwaSelektora, String typ) throws DiagramException {
+    public Obiekt dodajObiekt(String nazwaKlasy, String nazwaSelektora, String typ, int nrLinii) throws DiagramException {
         
         ObiektTyp typObiektu;
         
         if (typ.isEmpty()) {
-            typ = "klasa"; // Wartość domyślna
+            typ = jezyk.typKlasa(); // Wartość domyślna
         }
         
-        switch (typ.toLowerCase()) {
-            case "użytkownik" :
-                typObiektu = ObiektTyp.UZYTKOWNIK;
-                break;
-            case "klasa" :
-                typObiektu = ObiektTyp.KLASA;
-                break;
-            default:
-                throw new DiagramException("Nie istnieje typ obiektu o nazwie " + typ);                
+        typ = typ.toLowerCase();      
+      
+        if (typ.matches(jezyk.typUzytkownik())) {
+            typObiektu = ObiektTyp.UZYTKOWNIK;
+        } else if (typ.matches(jezyk.typKlasa())) {
+            typObiektu = ObiektTyp.KLASA;
+        } else {
+            throw new DiagramException(DiagramException.TypBledu.NIEISTNIEJACY_TYP_OBIEKTU, nrLinii, typ);                
         }
         
-        Obiekt nowyObiekt = new Obiekt(nazwaKlasy, nazwaSelektora, typObiektu);
+        Obiekt nowyObiekt = new Obiekt(nazwaKlasy, nazwaSelektora, typObiektu, nrLinii);
         nowyObiekt.ustawIndeks(listaObiektow.size());
         listaObiektow.add(nowyObiekt);
         
@@ -175,7 +176,7 @@ public class Diagram {
             
             for (ElementPoziomy o : listaElementowPoziomych()) {
                 if (o.id().equals(dane.identyfikator)) {
-                    throw new DiagramException("Istnieje już element poziomy, który używa identyfikatora " + dane.identyfikator);
+                    throw new DiagramException(DiagramException.TypBledu.DWUKROTNA_DEFINICJA, dane.komendaNr , dane.identyfikator);
                 }
             }
             idDoUstawienia = true;
@@ -185,24 +186,24 @@ public class Diagram {
             //Trzeba sprawdzić, czy coś nie ma takiego identyfikatora, jak nasza nazwa
             for (ElementPoziomy o : listaElementowPoziomych()) {
                 if (o.identyfikatorMocny() && o.id().equals(dane.nazwa)) {
-                    throw new DiagramException("Istnieje już obiekt, który używa identyfikatora " + dane.nazwa);
+                    throw new DiagramException(DiagramException.TypBledu.DWUKROTNA_DEFINICJA, dane.komendaNr, dane.nazwa);
                 }
             }
         }
         
         //Względna równoległość
         if (dane.nazwaRownoleglego != null) {            
-            dane.indeksWiersza = indeksKomunikatu(dane.nazwaRownoleglego);            
+            dane.indeksWiersza = indeksKomunikatu(dane.nazwaRownoleglego, dane.komendaNr);            
         }
         
         Komunikat nowy;
         if (dane.daneObiektuZagniezdzonego == null) {
-            nowy = dodajKomunikat(dane.nazwa, dane.typKomunikatu, dane.nazwaObiektu1, dane.nazwaObiektu2, dane.indeksWiersza);
+            nowy = dodajKomunikat(dane.nazwa, dane.typKomunikatu, dane.nazwaObiektu1, dane.nazwaObiektu2, dane.indeksWiersza, dane.komendaNr);
         }
         else {
             nowy = dodajObiektTworzonyKomunikatem(dane.daneObiektuZagniezdzonego.nazwa,
                     dane.daneObiektuZagniezdzonego.nazwaSelektora,
-                    dane.nazwa, dane.nazwaObiektu1, dane.indeksWiersza);
+                    dane.nazwa, dane.nazwaObiektu1, dane.indeksWiersza, dane.komendaNr);
             
             dane.daneObiektuZagniezdzonego.gotowyObiekt = nowy.obiektKoncowy;
             daneDodawanychObiektow.add(dane.daneObiektuZagniezdzonego);
@@ -214,17 +215,14 @@ public class Diagram {
         
     }
     
-    public Komunikat dodajKomunikat(String nazwaKomunikatu, String typ, String nazwaObiektu1, String nazwaObiektu2, Integer indeksWiersza) throws DiagramException {
+    public Komunikat dodajKomunikat(String nazwaKomunikatu, String typ, String nazwaObiektu1,
+            String nazwaObiektu2, Integer indeksWiersza, int nrLinii) throws DiagramException {
         
         KomunikatTyp typKomunikatu;
-        
-        if (listaObiektow.isEmpty()) {
-            throw new DiagramException("Nie mozna dodać komunikatu do diagramu, który nie zawiera żadnych obiektów.");
-        }
    
         Obiekt obiektPoczatkowy;
         if (nazwaObiektu1 != null) {
-            obiektPoczatkowy = znajdzObiekt(nazwaObiektu1);
+            obiektPoczatkowy = znajdzObiekt(nazwaObiektu1, nrLinii);
         }
         else {
             obiektPoczatkowy = zwrocPunktPoczatkowy();
@@ -232,31 +230,28 @@ public class Diagram {
         
         Obiekt obiektKoncowy;
         if (nazwaObiektu2 != null) {
-            obiektKoncowy = znajdzObiekt(nazwaObiektu2);
+            obiektKoncowy = znajdzObiekt(nazwaObiektu2, nrLinii);
         }
         else {
             obiektKoncowy = zwrocPunktKoncowy();
         }
         
         if (typ.isEmpty()) {
-            typ = "wywołanie"; // Wartość domyślna
+            typ = jezyk.typWywolanie(); // Wartość domyślna
         }
         
-        switch (typ.toLowerCase()) {
-            case "wywołanie" :
+        typ = typ.toLowerCase();      
+      
+        if (typ.matches(jezyk.typWywolanie())) {
                 typKomunikatu = KomunikatTyp.WYWOLANIE;
-                break;
-            case "powrót" :
+        } else if (typ.matches(jezyk.typPowrot())) {
                 typKomunikatu = KomunikatTyp.POWROT;
-                break;
-            case "asynchroniczny" :
+        } else if (typ.matches(jezyk.typAsynchroniczny())) {
                 typKomunikatu = KomunikatTyp.ASYNCHRONICZNY;
-                break;
-            case "usuwanie" :
+        } else if (typ.matches(jezyk.typUsuwanie())) {
                 typKomunikatu = KomunikatTyp.USUWANIE;
-                break;
-            default:
-                throw new DiagramException("Nie istnieje typ komunikatu o nazwie " + typ);                
+        } else {
+                throw new DiagramException(DiagramException.TypBledu.NIEISTNIEJACY_TYP_KOMUNIKATU, nrLinii, typ);                
         }
         
         Komunikat nowyKomunikat;
@@ -266,19 +261,19 @@ public class Diagram {
         }
         
         //Sprawdzenie, czy obiekty w tym momencie w ogóle istnieją
-        if ((obiektPoczatkowy.zwrocPrzesuniecieNaglowka() >= indeksWiersza) || (obiektKoncowy.zwrocPrzesuniecieNaglowka() >= indeksWiersza)) {
-            throw new DiagramException("Nie można dodać komunikatu " + nazwaKomunikatu + " w żądanym miejscu, ponieważ obiekt " 
-                    + obiektPoczatkowy.id() + " jeszcze nie istnieje.");
+        if (obiektPoczatkowy.zwrocPrzesuniecieNaglowka() >= indeksWiersza) {
+            throw new DiagramException(DiagramException.TypBledu.OBIEKT_NIEUTWORZONY, nrLinii, nazwaKomunikatu, obiektPoczatkowy.id());
+        } else if (obiektKoncowy.zwrocPrzesuniecieNaglowka() >= indeksWiersza) {
+            throw new DiagramException(DiagramException.TypBledu.OBIEKT_NIEUTWORZONY, nrLinii, nazwaKomunikatu, obiektKoncowy.id());
         }
         
         if ((obiektKoncowy.zwrocPrzesuniecieKonca() != 0)) { // Obiekt był niszczony
             
             if (typKomunikatu == KomunikatTyp.USUWANIE) {
-                throw new DiagramException("Próba dwukrotnego usunięcia obiektu " + obiektKoncowy.id() + ".");
+                throw new DiagramException(DiagramException.TypBledu.DWUKROTNE_USUNIECIE_OBIEKTU, nrLinii, obiektKoncowy.id());
             }
             if (((obiektPoczatkowy.zwrocPrzesuniecieKonca() != 0) && (obiektPoczatkowy.zwrocPrzesuniecieKonca() <= indeksWiersza)) || (obiektKoncowy.zwrocPrzesuniecieKonca() <= indeksWiersza)) {
-                throw new DiagramException("Nie można dodać komunikatu " + nazwaKomunikatu + " w żądanym miejscu, ponieważ obiekt " 
-                    + obiektPoczatkowy.id() + " został wcześniej zniszczony.");
+                throw new DiagramException(DiagramException.TypBledu.OBIEKT_USUNIETY, nrLinii, nazwaKomunikatu, obiektPoczatkowy.id());
             }
             
         }
@@ -300,7 +295,7 @@ public class Diagram {
             
             for (ElementPoziomy o : listaElementowPoziomych()) {
                 if (o.id().equals(dane.identyfikator)) {
-                    throw new DiagramException("Istnieje już element poziomy, który używa identyfikatora " + dane.identyfikator);
+                    throw new DiagramException(DiagramException.TypBledu.POWTORZONY_IDENTYFIKATOR_ELEMENTU_POZIOMEGO, dane.nrKomendy, dane.identyfikator);
                 }
             }
             idDoUstawienia = true;
@@ -310,26 +305,26 @@ public class Diagram {
             //Trzeba sprawdzić, czy coś nie ma takiego identyfikatora, jak nasza nazwa
             for (ElementPoziomy o : listaElementowPoziomych()) {
                 if (o.identyfikatorMocny() && o.id().equals(dane.nazwa)) {
-                    throw new DiagramException("Istnieje już obiekt, który używa identyfikatora " + dane.nazwa);
+                    throw new DiagramException(DiagramException.TypBledu.POWTORZONY_IDENTYFIKATOR_ELEMENTU_POZIOMEGO, dane.nrKomendy, dane.nazwa);
                 }
             }
         }
         
         //Względna równoległość
         if (dane.nazwaRownoleglego != null) {            
-            dane.indeksWiersza = indeksKomunikatu(dane.nazwaRownoleglego);            
+            dane.indeksWiersza = indeksKomunikatu(dane.nazwaRownoleglego, dane.nrKomendy);            
         }
         
         if (dane.nazwaKoncowego != null) {            
-            dane.wysokoscBloku = indeksKomunikatu(dane.nazwaKoncowego) - dane.indeksWiersza + 1;
+            dane.wysokoscBloku = indeksKomunikatu(dane.nazwaKoncowego, dane.nrKomendy) - dane.indeksWiersza + 1;
             if (dane.wysokoscBloku < 1) {
-                throw new DiagramException("Koniec obszaru wydzielonego nie może znajdować się przed jego początkiem.");
+                throw new DiagramException(DiagramException.TypBledu.ODWROCONY_OBSZAR, dane.nrKomendy, dane.nazwa);
             }
         }
         
         ObszarWydzielony nowy = dodajObszarWydzielony(dane.nazwa, dane.komentarz, dane.nazwaObiektu1,
                 dane.nazwaObiektu2, dane.indeksWiersza, dane.wysokoscBloku,
-                dane.domyslnaRownoleglosc);
+                dane.domyslnaRownoleglosc, dane.nrKomendy);
         
         if (idDoUstawienia) {
             nowy.ustawId(dane.identyfikator);
@@ -345,8 +340,8 @@ public class Diagram {
      * @param indeksWiersza Indeks wiersza, od którego będzie się zaczynał obszar (jeśli null, obszar zostanie dodany na spodzie diagramu).
      * @throws DiagramException 
      */
-    public void dodajObszarWydzielony(String nazwaObszaru, String nazwaObiektu1, String nazwaObiektu2, Integer indeksWiersza) throws DiagramException {
-        dodajObszarWydzielony(nazwaObszaru, "", nazwaObiektu1, nazwaObiektu2, indeksWiersza, null, true);
+    public void dodajObszarWydzielony(String nazwaObszaru, String nazwaObiektu1, String nazwaObiektu2, Integer indeksWiersza, int nrLinii) throws DiagramException {
+        dodajObszarWydzielony(nazwaObszaru, "", nazwaObiektu1, nazwaObiektu2, indeksWiersza, null, true, nrLinii);
     }
     
     /**
@@ -360,10 +355,10 @@ public class Diagram {
      * @param domyslnaRownoleglosc Jeśli true, obszar domyślnie będzie występował równolegle z innymi obiektami poziomymi. Jeśli false, doda się w sposób analogiczny dla komunikatu.
      * @throws DiagramException 
      */
-    public ObszarWydzielony dodajObszarWydzielony(String nazwaObszaru, String komentarz, String nazwaObiektu1, String nazwaObiektu2, Integer indeksWiersza, Integer wysokoscBloku, boolean domyslnaRownoleglosc) throws DiagramException {
+    public ObszarWydzielony dodajObszarWydzielony(String nazwaObszaru, String komentarz, String nazwaObiektu1, String nazwaObiektu2, Integer indeksWiersza, Integer wysokoscBloku, boolean domyslnaRownoleglosc, int nrLinii) throws DiagramException {
         
-        Obiekt obiektPoczatkowy = znajdzObiekt(nazwaObiektu1);
-        Obiekt obiektKoncowy = znajdzObiekt(nazwaObiektu2);
+        Obiekt obiektPoczatkowy = znajdzObiekt(nazwaObiektu1, nrLinii);
+        Obiekt obiektKoncowy = znajdzObiekt(nazwaObiektu2, nrLinii);
         
         if (indeksWiersza == null) {
             indeksWiersza = zwrocLiczbeZajetychWierszy();
@@ -378,7 +373,7 @@ public class Diagram {
         }
         
         if (wysokoscBloku < 1) {
-            throw new DiagramException("Obszar wydzielony " + nazwaObszaru + " ma błędną wysokość (mniejszą niż 1)");
+            throw new DiagramException(DiagramException.TypBledu.NIEDODATNIA_WYSOKOSC_BLOKU, nrLinii, nazwaObszaru);
         }
         
         ObszarWydzielony nowyObszar = new ObszarWydzielony(nazwaObszaru, komentarz, obiektPoczatkowy, obiektKoncowy, wysokoscBloku, indeksWiersza);
@@ -398,7 +393,7 @@ public class Diagram {
         this.nazwa = nazwa;
     }
     
-    private Obiekt znajdzObiekt(String nazwaObiektu) throws DiagramException {
+    private Obiekt znajdzObiekt(String nazwaObiektu, int nrLinii) throws DiagramException {
         
         Obiekt szukanyObiekt = null;
         
@@ -410,7 +405,7 @@ public class Diagram {
         }
         
         if (szukanyObiekt == null) {            
-            throw new DiagramException("Brak obiektu o nazwie " + nazwaObiektu);            
+            throw new DiagramException(DiagramException.TypBledu.BRAK_OBIEKTU, nrLinii, nazwaObiektu);            
         }
         
         return szukanyObiekt;
@@ -423,7 +418,7 @@ public class Diagram {
     }
     
     public void ustawCzasyZyciaObiektow() throws DiagramException {
-        
+              
         for (DaneObiektu dane : daneDodawanychObiektow) {
             
             if (dane.listaPunktow == null)
@@ -450,14 +445,14 @@ public class Diagram {
                     
                     if (indeks == null) {
                         //TODO: Można rozważyć, czy warto byłoby poszukać także obszarów
-                        indeks = indeksKomunikatu(s2);
+                        indeks = indeksKomunikatu(s2, dane.nrKomendy);
                     }
                     
                     // Sprawdzanie, czy obiekt w tym momencie w ogóle żyje                    
                     if ((dane.gotowyObiekt.zwrocPrzesuniecieNaglowka() >= indeks) || 
                             ((dane.gotowyObiekt.zwrocPrzesuniecieKonca() != 0) && 
                             (dane.gotowyObiekt.zwrocPrzesuniecieKonca() <= indeks))) {
-                        throw new DiagramException("Obiekt nie istnieje w momencie, w którym miałby zmienić się jego status.");
+                        throw new DiagramException(DiagramException.TypBledu.OBIEKT_NIEFUNKCJONUJACY, dane.gotowyObiekt.liniaKodu, dane.gotowyObiekt.id());
                     }
                     
                     czasZycia.add(indeks);
@@ -470,7 +465,8 @@ public class Diagram {
         }
     }
     
-    public Diagram () {
+    public Diagram(JezykSkladni jezykS) {
+        jezyk = jezykS;
         
         this.nazwa = "Diagram";        
         listaObiektow = new LinkedList<>();
@@ -486,9 +482,10 @@ public class Diagram {
     private Obiekt zwrocPunktPoczatkowy() {
      
         Obiekt doZwrotu;
-        if (listaObiektow.getFirst().przedstawiaPunktSpecjalny()) {
+        if (!listaObiektow.isEmpty() && listaObiektow.getFirst().przedstawiaPunktSpecjalny()) {
             doZwrotu = listaObiektow.getFirst();
         }
+        
         else {
             doZwrotu = new Obiekt();
             doZwrotu.ustawIndeks(0);
@@ -504,7 +501,7 @@ public class Diagram {
 
     private Obiekt zwrocPunktKoncowy() {
         Obiekt doZwrotu;
-        if (listaObiektow.getLast().przedstawiaPunktSpecjalny()) {
+        if (!listaObiektow.isEmpty() && listaObiektow.getLast().przedstawiaPunktSpecjalny()) {
             doZwrotu = listaObiektow.getLast();
         }
         else {
@@ -515,20 +512,20 @@ public class Diagram {
         return doZwrotu;
     }
 
-    public Komunikat dodajObiektTworzonyKomunikatem(String nazwaObiektu, String selektorObiektu, String nazwaKomunikatu, String nazwaObiektuWychodzacego, Integer indeksWiersza) throws DiagramException {
+    public Komunikat dodajObiektTworzonyKomunikatem(String nazwaObiektu, String selektorObiektu, String nazwaKomunikatu, String nazwaObiektuWychodzacego, Integer indeksWiersza, int nrLinii) throws DiagramException {
         
         if (indeksWiersza == null) {
             indeksWiersza = zwrocLiczbeZajetychWierszy();
         }
         
-        Obiekt nowyObiekt = new Obiekt(nazwaObiektu, selektorObiektu, ObiektTyp.KLASA);        
+        Obiekt nowyObiekt = new Obiekt(nazwaObiektu, selektorObiektu, ObiektTyp.KLASA, nrLinii);        
         nowyObiekt.ustawIndeks(listaObiektow.size());
         nowyObiekt.ustawPrzesuniecieNaglowka(indeksWiersza);
         listaObiektow.add(nowyObiekt);
         
         Obiekt obiektPoczatkowy;
         if (nazwaObiektuWychodzacego != null) {
-            obiektPoczatkowy = znajdzObiekt(nazwaObiektuWychodzacego);
+            obiektPoczatkowy = znajdzObiekt(nazwaObiektuWychodzacego, nrLinii);
         }
         else {
             obiektPoczatkowy = zwrocPunktPoczatkowy();
@@ -543,7 +540,7 @@ public class Diagram {
         
     }
 
-    private Integer indeksKomunikatu(String nazwa) throws DiagramException {
+    private Integer indeksKomunikatu(String nazwa, int nrLinii) throws DiagramException {
         
         Integer indeks = null;
         
@@ -555,7 +552,7 @@ public class Diagram {
         }
             
         if (indeks == null) {
-            throw new DiagramException("Nie istnieje komunikat o nazwie " + nazwa);
+            throw new DiagramException(DiagramException.TypBledu.BRAK_KOMUNIKATU, nrLinii, nazwa);
         }    
         
         return indeks;
