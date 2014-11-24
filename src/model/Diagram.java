@@ -20,8 +20,6 @@ public class Diagram {
     /** Obszary wydzielone, które domyślnie nie mogą instnieć równolegle z komunikatami */
     private LinkedList<ObszarWydzielony> listaMocnychObszarowWydzielonych;
     
-    private LinkedList<String> listaOstrzezen;
-    
     /** Lista danych dodanych obiektów - zapamiętana, żeby dało się ustalić czasy życia */
     private LinkedList<DaneObiektu> daneDodawanychObiektow;
     
@@ -473,10 +471,9 @@ public class Diagram {
         listaKomunikatow = new LinkedList<>();
         listaMocnychObszarowWydzielonych = new LinkedList<>();
         listaSlabychObszarowWydzielonych = new LinkedList<>();
-        listaOstrzezen = new LinkedList<>();
         daneDodawanychObiektow = new LinkedList<>();
         
-        
+        nazwa = jezyk.komendaDiagram();
     }    
 
     private Obiekt zwrocPunktPoczatkowy() {

@@ -69,10 +69,14 @@ public class DaneDiagramu {
                     throw new DiagramException (DiagramException.TypBledu.WYMAGANA_LICZBA, a.nrLinii, a.identyfikator, a.cialo);
                 }
                 
-                if (szerokosc < 50) {
+                if (wysokosc < 50) {
                     throw new DiagramException (DiagramException.TypBledu.PONIZEJ_50, a.nrLinii, a.identyfikator, a.cialo);
                 }
-            }  
+            }
+            else {
+                //Nieznany atrybut - generuj wyjątek
+                throw new DiagramException (DiagramException.TypBledu.NIEOCZEKIWANY_ATRYBUT, a.nrLinii, a.identyfikator);
+            }
             
         }      
     }

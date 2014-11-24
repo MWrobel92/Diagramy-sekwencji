@@ -37,7 +37,7 @@ public class JezykSkladniPolski implements JezykSkladni {
 
     @Override
     public String atrybutKlasa() {
-        return "klasa";
+        return "selektor";
     }
 
     @Override

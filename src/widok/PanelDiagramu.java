@@ -211,7 +211,7 @@ public class PanelDiagramu extends JPanel {
             // Wyliczanie współrzędnych
             int y1 = (yStart-1) * wysokoscKratki + wysokoscNaglowka + wysokoscKratki / 2;
             int y2 = yStart * wysokoscKratki + wysokoscNaglowka + wysokoscKratki / 2;                
-            x2 = (xStart+1) * szerokoscKratki + szerokoscKratki;
+            x2 = (xStart+1) * szerokoscKratki;
             x1 = x2 - szerokoscKratki / 2;
             
             // Rysowanie linii

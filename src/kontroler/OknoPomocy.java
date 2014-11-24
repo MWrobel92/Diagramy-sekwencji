@@ -6,10 +6,12 @@ package kontroler;
 
 import java.awt.Frame;
 import javax.swing.JDialog;
+import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTree;
+import javax.swing.WindowConstants;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -43,35 +45,37 @@ public class OknoPomocy extends JDialog implements TreeSelectionListener {
     }
     
     private JTree drzewoWyboruStony;
-    JTextArea panelTekstu;
+    JEditorPane panelTekstu;
 
     public OknoPomocy (JezykInterfejsu jezyk, JezykSkladni jezykS) {
         
         // Ogólne ostawienia okna
         super((Frame)null, jezyk.menuPomoc(), false);
         this.setSize(500, 400);
+        this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         
         // Przygotowanie drzewa
-        DefaultMutableTreeNode korzen = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocOgolna(), jezyk.pomocOgolnaTresc()));
+        DefaultMutableTreeNode korzen = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocOgolna(), jezyk.pomocOgolnaTresc(jezykS)));
         drzewoWyboruStony = new JTree(korzen);       
         drzewoWyboruStony.addTreeSelectionListener(this);
         
-        DefaultMutableTreeNode podstawoweInformacje = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocPodstawoweInformacje(), jezyk.pomocPodstawoweInformacjeTresc()));
+        DefaultMutableTreeNode podstawoweInformacje = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocPodstawoweInformacje(), jezyk.pomocPodstawoweInformacjeTresc(jezykS)));
         korzen.add(podstawoweInformacje);
-        DefaultMutableTreeNode elementy = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocSkladnia(), jezyk.pomocSkladniaTresc()));
+        DefaultMutableTreeNode elementy = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocSkladnia(), jezyk.pomocSkladniaTresc(jezykS)));
         korzen.add(elementy);
-        DefaultMutableTreeNode obiekty = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocObiekty(), jezyk.pomocObiektyTresc()));
+        DefaultMutableTreeNode obiekty = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocObiekty(), jezyk.pomocObiektyTresc(jezykS)));
         elementy.add(obiekty);
-        DefaultMutableTreeNode komunikaty = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocKomunikaty(), jezyk.pomocKomunikatyTresc()));
+        DefaultMutableTreeNode komunikaty = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocKomunikaty(), jezyk.pomocKomunikatyTresc(jezykS)));
         elementy.add(komunikaty);
-        DefaultMutableTreeNode bloki = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocBloki(), jezyk.pomocBlokiTresc()));
+        DefaultMutableTreeNode bloki = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocBloki(), jezyk.pomocBlokiTresc(jezykS)));
         elementy.add(bloki);
-        DefaultMutableTreeNode ustawieniaProgramu = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocUstawieniaProgramu(), jezyk.pomocUstawieniaProgramuTresc()));
+        DefaultMutableTreeNode ustawieniaProgramu = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocUstawieniaProgramu(), jezyk.pomocUstawieniaProgramuTresc(jezykS)));
         korzen.add(ustawieniaProgramu);
         
         // Układ okna        
-        panelTekstu = new JTextArea();
+        panelTekstu = new JEditorPane("text/html", "");
         panelTekstu.setEditable(false);
+        
         JScrollPane panelLewy = new JScrollPane(drzewoWyboruStony);
         JScrollPane panelPrawy = new JScrollPane(panelTekstu);
         JSplitPane panelGlowny = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, panelLewy, panelPrawy);

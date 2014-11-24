@@ -319,7 +319,7 @@ public class JezykInterfejsuPolski implements JezykInterfejsu {
         return "Pomoc";}
 
     @Override
-    public String pomocOgolnaTresc() {
+    public String pomocOgolnaTresc(JezykSkladni jezyk) {
         return "Tu będzie podstawowa pomoc dotycząca obsługi programu";
     }
 
@@ -329,7 +329,7 @@ public class JezykInterfejsuPolski implements JezykInterfejsu {
     }
 
     @Override
-    public String pomocPodstawoweInformacjeTresc() {
+    public String pomocPodstawoweInformacjeTresc(JezykSkladni jezyk) {
         return "Tu będzie podstawowa pomoc dotycząca tworzenia wykresów";
     }
 
@@ -339,7 +339,7 @@ public class JezykInterfejsuPolski implements JezykInterfejsu {
     }
 
     @Override
-    public String pomocSkladniaTresc() {
+    public String pomocSkladniaTresc(JezykSkladni jezyk) {
         return "Tu będzie podstawowa pomoc dotycząca składni kodu źródłowego używanego do generowania diagramów.";
     }
 
@@ -349,7 +349,7 @@ public class JezykInterfejsuPolski implements JezykInterfejsu {
     }
 
     @Override
-    public String pomocUstawieniaProgramuTresc() {
+    public String pomocUstawieniaProgramuTresc(JezykSkladni jezyk) {
         return "Tu będzie pomoc dotycząca ustawień programu";
     }
 
@@ -359,8 +359,38 @@ public class JezykInterfejsuPolski implements JezykInterfejsu {
     }
 
     @Override
-    public String pomocObiektyTresc() {
-        return "Tu będzie pomoc dotycząca dodawania uczestników do diagramu";
+    public String pomocObiektyTresc(JezykSkladni jezyk) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<html>");
+        sb.append("Obiekty dodawane są do diagramu komendą „");
+        sb.append(jezyk.komendaObiekt());
+        sb.append("”. Komenda ta przyjmuje następujące atrybuty:");
+        sb.append("<ul><li>");
+        sb.append("<b>");
+        sb.append(jezyk.atrybutTyp());
+        sb.append("</b> – typ danego uczestnika. Ten atrybut może przyjąć następujące wartości: ");
+        sb.append("<ul><li>");
+        sb.append("<b>");
+        sb.append(jezyk.typKlasa());
+        sb.append("</b> – obiekt oznaczający klasę bądź inny moduł systemu (wartość domyślna),");
+        sb.append("</li><li>");
+        sb.append("<b>");
+        sb.append(jezyk.typUzytkownik());
+        sb.append("</b> – obiekt oznaczający aktora, czyli osobę korzystającą z systemu.");
+        sb.append("</li></ul>");
+        sb.append("</li><li>");
+        sb.append("<b>");
+        sb.append(jezyk.atrybutKlasa());
+        sb.append("</b>  – nazwa selektora danego obiektu (np. definiującego klasę obiektu), tekst wyświetlany w nagłówku obiektu przed dwukropkiem.");
+        sb.append("</li><li>");
+        sb.append("<b>");
+        sb.append(jezyk.atrybutZycie());
+        sb.append("</b> – atrybut definiujący, które fragmenty linii życia mają zostać oznaczone jako czas życia obiektu. W tym atrybucie należy podać identyfikatory komunikatów, w których zaczyna się lub kończy czas życia obiektu. ");
+        sb.append("Liczba tych identyfikatorów musi być parzysta. Identyfikatory należy oddzielać przecinkami. W przypadku braku zdefiniowania tego atrybutu, za domyślny czas życia zostanie przyjęty okres od obsłużenia pierwszego do obsłużenia ostatniego komunikatu dotyczącego danego obiektu. ");
+        sb.append("Ustalanie czasu życia obiektów następuje po wygenerowaniu wszystkich elementów diagramu, dlatego w atrybucie tym wyjątkowo można podawać identyfikatory komunikatów, które zostaną zdefiniowane po definicji obiektu.");
+        sb.append("</li></ul>");
+        sb.append("</html>");
+        return sb.toString();
     }
 
     @Override
@@ -369,7 +399,7 @@ public class JezykInterfejsuPolski implements JezykInterfejsu {
     }
 
     @Override
-    public String pomocKomunikatyTresc() {
+    public String pomocKomunikatyTresc(JezykSkladni jezyk) {
         return "Tu będzie pomoc dotycząca dodawania komunikatów do diagramu";
     }
 
@@ -379,7 +409,7 @@ public class JezykInterfejsuPolski implements JezykInterfejsu {
     }
 
     @Override
-    public String pomocBlokiTresc() {
+    public String pomocBlokiTresc(JezykSkladni jezyk) {
         return "Tu będzie pomoc dotycząca dodawania bloków wydzielonych do diagramu";
     }
 

@@ -56,6 +56,9 @@ public class Obiekt extends ElementDiagramu {
         this.nazwaSelektora = "";
         this.typObiektu = ObiektTyp.PUNKT_SPECJALNY;
         this.liniaKodu = 0;
+        
+        this.przesuniecieNaglowka = -1;
+        this.przesuniecieKonca = 0;
     }
     
     public Obiekt (String nazwaKlasy, String nazwaSelektora, ObiektTyp typObiektu, int liniaKodu) {

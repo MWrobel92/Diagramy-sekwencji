@@ -2,7 +2,6 @@ package kontroler;
 
 import widok.PanelDiagramu;
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -28,7 +27,30 @@ public class OknoProgramu extends JPanel {
     private JFrame frame;
     
     private JezykInterfejsu jezyk;
+    
+    JMenu menuPlik;
+    JMenu menuEdycja;
+    JMenu menuDiagram;
+    JMenu menuOpcje;
+    JMenu menuPomoc;
+    JMenuItem menuPlikZapisz;
+    JMenuItem menuPlikZapiszJako;
+    JMenuItem menuPlikWczytaj;
+    JMenuItem menuEdycjaCofnij;
+    JMenuItem menuEdycjaPonow;
+    JMenu menuEdycjaWstaw;        
+    JMenuItem menuEdycjaWstawAktora;        
+    JMenuItem menuEdycjaWstawKomunikat;        
+    JMenuItem menuEdycjaWstawObszarWydzielony;        
+    JMenuItem menuOpcjeJezyk;
+    JMenuItem menuDiagramGeneruj;
+    JMenuItem menuDiagramZapisz;
+    JMenuItem menuPomocPomoc;
+    JMenuItem menuPomocOprogramie;
     JCheckBoxMenuItem menuOpcjeAutoodswiezanie;
+    JLabel kontrolkaKonsola;
+    JLabel kontrolkaKodZrodlowy;
+    JLabel kontrolkaDiagram;
     
     private void przygotujIPokazGUI() {        
         
@@ -60,25 +82,6 @@ public class OknoProgramu extends JPanel {
         // Deklaracje kontrolek GUI
         JMenuBar pasekMenu;
         JSplitPane panelGlowny;
-        JMenu menuPlik;
-        JMenu menuEdycja;
-        JMenu menuDiagram;
-        JMenu menuPomoc;
-        JMenuItem menuPlikZapisz;
-        JMenuItem menuPlikZapiszJako;
-        JMenuItem menuPlikWczytaj;
-        JMenuItem menuEdycjaCofnij;
-        JMenuItem menuEdycjaPonow;
-        JMenu menuEdycjaWstaw;        
-        JMenuItem menuEdycjaWstawAktora;        
-        JMenuItem menuEdycjaWstawKomunikat;        
-        JMenuItem menuEdycjaWstawObszarWydzielony;
-        JMenu menuOpcje;
-        JMenuItem menuOpcjeJezyk;
-        JMenuItem menuDiagramGeneruj;
-        JMenuItem menuDiagramZapisz;
-        JMenuItem menuPomocPomoc;
-        JMenuItem menuPomocOprogramie;
         JPanel panelKonsoli;
         JScrollPane wewnetrznyPanelKonsoli;
         JTextArea poleKonsoli;
@@ -92,40 +95,40 @@ public class OknoProgramu extends JPanel {
         
         // Pasek menu
         pasekMenu = new JMenuBar();
-        menuPlik = new JMenu(jezyk.menuPlik());
-        menuEdycja = new JMenu(jezyk.menuEdycja());
-        menuDiagram = new JMenu(jezyk.menuDiagram());
-        menuPomoc = new JMenu(jezyk.menuPomoc());
-        menuPlikWczytaj = new JMenuItem(jezyk.menuPlikWczytaj());
-        menuPlikZapisz = new JMenuItem(jezyk.menuPlikZapisz());
-        menuPlikZapiszJako = new JMenuItem(jezyk.menuPlikZapiszJako());
+        menuPlik = new JMenu();
+        menuEdycja = new JMenu();
+        menuDiagram = new JMenu();
+        menuPomoc = new JMenu();
+        menuPlikWczytaj = new JMenuItem();
+        menuPlikZapisz = new JMenuItem();
+        menuPlikZapiszJako = new JMenuItem();
         menuPlik.add(menuPlikWczytaj);
         menuPlik.add(menuPlikZapisz);
         menuPlik.add(menuPlikZapiszJako);
-        menuEdycjaCofnij = new JMenuItem(jezyk.menuEdycjaCofnij());
-        menuEdycjaPonow = new JMenuItem(jezyk.menuEdycjaPonow());
-        menuEdycjaWstaw = new JMenu(jezyk.menuEdycjaWstaw());        
-        menuEdycjaWstawAktora = new JMenuItem(jezyk.menuEdycjaWstawAktora());        
-        menuEdycjaWstawKomunikat = new JMenuItem(jezyk.menuEdycjaWstawKomunikat());        
-        menuEdycjaWstawObszarWydzielony = new JMenuItem(jezyk.menuEdycjaWstawObszarWydzielony());
+        menuEdycjaCofnij = new JMenuItem();
+        menuEdycjaPonow = new JMenuItem();
+        menuEdycjaWstaw = new JMenu();
+        menuEdycjaWstawAktora = new JMenuItem();
+        menuEdycjaWstawKomunikat = new JMenuItem(); 
+        menuEdycjaWstawObszarWydzielony = new JMenuItem();
         menuEdycjaWstaw.add(menuEdycjaWstawAktora);
         menuEdycjaWstaw.add(menuEdycjaWstawKomunikat);
         menuEdycjaWstaw.add(menuEdycjaWstawObszarWydzielony);
         menuEdycja.add(menuEdycjaCofnij);
         menuEdycja.add(menuEdycjaPonow);
         menuEdycja.add(menuEdycjaWstaw);
-        menuOpcje = new JMenu(jezyk.menuOpcje());
-        menuOpcjeJezyk = new JMenuItem(jezyk.menuOpcjeJezyk());
-        menuOpcjeAutoodswiezanie = new JCheckBoxMenuItem(jezyk.menuOpcjeAutoodswiezanie());
+        menuOpcje = new JMenu();
+        menuOpcjeJezyk = new JMenuItem();
+        menuOpcjeAutoodswiezanie = new JCheckBoxMenuItem();
         menuOpcjeAutoodswiezanie.setSelected(true);
         menuOpcje.add(menuOpcjeJezyk);
         menuOpcje.add(menuOpcjeAutoodswiezanie);
-        menuDiagramGeneruj = new JMenuItem(jezyk.menuDiagramGeneruj());
-        menuDiagramZapisz  = new JMenuItem(jezyk.menuDiagramZapisz());
+        menuDiagramGeneruj = new JMenuItem();
+        menuDiagramZapisz  = new JMenuItem();
         menuDiagram.add(menuDiagramGeneruj);
         menuDiagram.add(menuDiagramZapisz);
-        menuPomocPomoc = new JMenuItem(jezyk.menuPomocPomoc());
-        menuPomocOprogramie = new JMenuItem(jezyk.menuPomocOProgramie());
+        menuPomocPomoc = new JMenuItem();
+        menuPomocOprogramie = new JMenuItem();
         menuPomoc.add(menuPomocPomoc);
         menuPomoc.add(menuPomocOprogramie);
         pasekMenu.add(menuPlik);
@@ -140,36 +143,41 @@ public class OknoProgramu extends JPanel {
         poleKonsoli = new JTextArea();
         poleKonsoli.setRows(3);
         wewnetrznyPanelKonsoli = new JScrollPane(poleKonsoli);
-        panelKonsoli.add(new JLabel(jezyk.kontrolkaKonsola()), BorderLayout.NORTH);
+        kontrolkaKonsola = new JLabel();
+        panelKonsoli.add(kontrolkaKonsola, BorderLayout.NORTH);
         panelKonsoli.add(wewnetrznyPanelKonsoli, BorderLayout.CENTER);        
         
         poleTekstowe = new JTextArea();
         panelTekstu = new JScrollPane(poleTekstowe);
         panelLewyZagniezdzony = new JPanel();
         panelLewyZagniezdzony.setLayout(new BorderLayout());
-        panelLewyZagniezdzony.add(new JLabel(jezyk.kontrolkaKodZrodlowy()), BorderLayout.NORTH);
+        kontrolkaKodZrodlowy = new JLabel();
+        panelLewyZagniezdzony.add(kontrolkaKodZrodlowy, BorderLayout.NORTH);
         panelLewyZagniezdzony.add(panelTekstu, BorderLayout.CENTER);
         panelLewy = new JSplitPane(JSplitPane.VERTICAL_SPLIT, panelLewyZagniezdzony, panelKonsoli);
         panelLewy.setDividerLocation(280);
         
         panelDiagramu = new PanelDiagramu(modelDiagramu);
         panelZDiagramem = new JScrollPane(panelDiagramu);
-        panelZDiagramem.setPreferredSize(null);
+        panelZDiagramem.setPreferredSize(null);        
+        
+        panelZDiagramem.getViewport().setOpaque(false);
 
         panelPrawy = new JPanel();
         panelPrawy.setLayout(new BorderLayout());
-        panelPrawy.add(new JLabel(jezyk.menuDiagram()), BorderLayout.NORTH);
+        kontrolkaDiagram = new JLabel();
+        panelPrawy.add(kontrolkaDiagram, BorderLayout.NORTH);
         panelPrawy.add(panelZDiagramem, BorderLayout.CENTER);
         
         // Panel główny
         panelGlowny = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, panelLewy, panelPrawy);
         panelGlowny.setDividerLocation(300);
         
-        // Okno
-        
+        // Okno        
         setLayout(new BorderLayout());
         add(pasekMenu, BorderLayout.NORTH);
         add(panelGlowny, BorderLayout.CENTER);
+        ustawNapisyNaKontrolkach();
         
         // Ustawienie listenera i komend akcji
         listener = new KontrolerOkna(this, poleTekstowe, panelDiagramu, menuEdycjaCofnij, menuEdycjaPonow, poleKonsoli);
@@ -231,7 +239,35 @@ public class OknoProgramu extends JPanel {
 
     void ustawJezyk(JezykInterfejsu nowyJezyk) {
         jezyk = nowyJezyk;
+        ustawNapisyNaKontrolkach();
         repaint();
     }
-
+    
+    private void ustawNapisyNaKontrolkach() {        
+        
+        menuPlik.setText(jezyk.menuPlik());
+        menuEdycja.setText(jezyk.menuEdycja());
+        menuDiagram.setText(jezyk.menuDiagram());        
+        menuPomoc.setText(jezyk.menuPomoc());
+        menuPlikWczytaj.setText(jezyk.menuPlikWczytaj());        
+        menuPlikZapisz.setText(jezyk.menuPlikZapisz());        
+        menuPlikZapiszJako.setText(jezyk.menuPlikZapiszJako());
+        menuEdycjaCofnij.setText(jezyk.menuEdycjaCofnij());
+        menuEdycjaPonow.setText(jezyk.menuEdycjaPonow());
+        menuEdycjaWstaw.setText(jezyk.menuEdycjaWstaw());        
+        menuEdycjaWstawAktora.setText(jezyk.menuEdycjaWstawAktora());
+        menuEdycjaWstawKomunikat.setText(jezyk.menuEdycjaWstawKomunikat());        
+        menuEdycjaWstawObszarWydzielony.setText(jezyk.menuEdycjaWstawObszarWydzielony());        
+        menuOpcje.setText(jezyk.menuOpcje());        
+        menuOpcjeJezyk.setText(jezyk.menuOpcjeJezyk());
+        menuOpcjeAutoodswiezanie.setText(jezyk.menuOpcjeAutoodswiezanie());
+        menuDiagramGeneruj.setText(jezyk.menuDiagramGeneruj());        
+        menuDiagramZapisz.setText(jezyk.menuDiagramZapisz());
+        menuPomocPomoc.setText(jezyk.menuPomocPomoc());
+        menuPomocOprogramie.setText(jezyk.menuPomocOProgramie());
+        kontrolkaKonsola.setText(jezyk.kontrolkaKonsola());
+        kontrolkaKodZrodlowy.setText(jezyk.kontrolkaKodZrodlowy());
+        kontrolkaDiagram.setText(jezyk.menuDiagram());
+        
+    }
 }
