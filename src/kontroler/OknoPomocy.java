@@ -9,7 +9,6 @@ import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
 import javax.swing.JTree;
 import javax.swing.WindowConstants;
 import javax.swing.event.TreeSelectionEvent;
@@ -55,22 +54,24 @@ public class OknoPomocy extends JDialog implements TreeSelectionListener {
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         
         // Przygotowanie drzewa
-        DefaultMutableTreeNode korzen = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocOgolna(), jezyk.pomocOgolnaTresc(jezykS)));
+        DefaultMutableTreeNode korzen = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocOgolna(), jezyk.pomocOgolnaTresc()));
         drzewoWyboruStony = new JTree(korzen);       
         drzewoWyboruStony.addTreeSelectionListener(this);
         
-        DefaultMutableTreeNode podstawoweInformacje = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocPodstawoweInformacje(), jezyk.pomocPodstawoweInformacjeTresc(jezykS)));
-        korzen.add(podstawoweInformacje);
         DefaultMutableTreeNode elementy = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocSkladnia(), jezyk.pomocSkladniaTresc(jezykS)));
         korzen.add(elementy);
+        DefaultMutableTreeNode diagram = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocDiagram(), jezyk.pomocDiagramTresc(jezykS)));
+        elementy.add(diagram);
         DefaultMutableTreeNode obiekty = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocObiekty(), jezyk.pomocObiektyTresc(jezykS)));
         elementy.add(obiekty);
         DefaultMutableTreeNode komunikaty = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocKomunikaty(), jezyk.pomocKomunikatyTresc(jezykS)));
         elementy.add(komunikaty);
         DefaultMutableTreeNode bloki = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocBloki(), jezyk.pomocBlokiTresc(jezykS)));
         elementy.add(bloki);
-        DefaultMutableTreeNode ustawieniaProgramu = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocUstawieniaProgramu(), jezyk.pomocUstawieniaProgramuTresc(jezykS)));
-        korzen.add(ustawieniaProgramu);
+        DefaultMutableTreeNode generowanie = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocGenerowanieDiagramu(), jezyk.pomocGenerowanieDiagramuTresc()));
+        korzen.add(generowanie);
+        DefaultMutableTreeNode pliki = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocPliki(), jezyk.pomocPlikiTresc()));
+        korzen.add(pliki);
         
         // Układ okna        
         panelTekstu = new JEditorPane("text/html", "");

@@ -75,20 +75,21 @@ public interface JezykInterfejsu {
 
     public String pomocOProgramie();
     public String pomocOgolna();
-    public String pomocOgolnaTresc(JezykSkladni jezyk);
-    public String pomocPodstawoweInformacje();
-    public String pomocPodstawoweInformacjeTresc(JezykSkladni jezyk);
+    public String pomocOgolnaTresc();
     public String pomocSkladnia();
     public String pomocSkladniaTresc(JezykSkladni jezyk);
-    public String pomocUstawieniaProgramu();
-    public String pomocUstawieniaProgramuTresc(JezykSkladni jezyk);
+    public String pomocDiagram();
+    public String pomocDiagramTresc(JezykSkladni jezyk);
     public String pomocObiekty();
     public String pomocObiektyTresc(JezykSkladni jezyk);
     public String pomocKomunikaty();
     public String pomocKomunikatyTresc(JezykSkladni jezyk);
     public String pomocBloki();
     public String pomocBlokiTresc(JezykSkladni jezyk);
-
+    public String pomocPliki();
+    public String pomocPlikiTresc();
+    public String pomocGenerowanieDiagramu();
+    public String pomocGenerowanieDiagramuTresc();
     
 
 }
