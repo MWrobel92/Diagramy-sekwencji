@@ -3,6 +3,7 @@ package kontroler;
 import widok.PanelDiagramu;
 import java.awt.BorderLayout;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -18,40 +19,46 @@ import model.JezykInterfejsuPolski;
 import model.JezykSkladniPolski;
 
 /**
- *
- * @author Michal
+ * Klasa odpowiedzialna za interfejs głównego okna programu.
+ * @author Michał Wróbel
  */
 public class OknoProgramu extends JPanel {
     
+    // Elementy składowe odpowiadające za okno
     private KontrolerOkna listener;
-    private JFrame frame;
-    
+    private JFrame frame;    
     private JezykInterfejsu jezyk;
     
-    JMenu menuPlik;
-    JMenu menuEdycja;
-    JMenu menuDiagram;
-    JMenu menuOpcje;
-    JMenu menuPomoc;
-    JMenuItem menuPlikZapisz;
-    JMenuItem menuPlikZapiszJako;
-    JMenuItem menuPlikWczytaj;
-    JMenuItem menuEdycjaCofnij;
-    JMenuItem menuEdycjaPonow;
-    JMenu menuEdycjaWstaw;        
-    JMenuItem menuEdycjaWstawAktora;        
-    JMenuItem menuEdycjaWstawKomunikat;        
-    JMenuItem menuEdycjaWstawObszarWydzielony;        
-    JMenuItem menuOpcjeJezyk;
-    JMenuItem menuDiagramGeneruj;
-    JMenuItem menuDiagramZapisz;
-    JMenuItem menuPomocPomoc;
-    JMenuItem menuPomocOprogramie;
-    JCheckBoxMenuItem menuOpcjeAutoodswiezanie;
-    JLabel kontrolkaKonsola;
-    JLabel kontrolkaKodZrodlowy;
-    JLabel kontrolkaDiagram;
+    // Kontrolki zawierające napisy zależne od języka
+    private JMenu menuPlik;
+    private JMenu menuEdycja;
+    private JMenu menuDiagram;
+    private JMenu menuOpcje;
+    private JMenu menuPomoc;
+    private JMenuItem menuPlikZapisz;
+    private JMenuItem menuPlikZapiszJako;
+    private JMenuItem menuPlikWczytaj;
+    private JMenuItem menuEdycjaCofnij;
+    private JMenuItem menuEdycjaPonow;
+    private JMenu menuEdycjaWstaw;        
+    private JMenuItem menuEdycjaWstawAktora;        
+    private JMenuItem menuEdycjaWstawKomunikat;        
+    private JMenuItem menuEdycjaWstawObszarWydzielony;        
+    private JMenuItem menuOpcjeJezyk;
+    private JMenuItem menuDiagramGeneruj;
+    private JMenuItem menuDiagramZapisz;
+    private JMenuItem menuPomocPomoc;
+    private JMenuItem menuPomocOprogramie;
+    private JCheckBoxMenuItem menuOpcjeAutoodswiezanie;
+    private JLabel kontrolkaKonsola;
+    private JLabel kontrolkaKodZrodlowy;
+    private JLabel kontrolkaDiagram;
     
+    // Elementy, do których może być potrzebny dostęp    
+    private JTextArea poleKonsoli;
+    private JTextArea poleTekstowe;
+    private PanelDiagramu panelDiagramu;
+        
     private void przygotujIPokazGUI() {        
         
         // Podstawowe ustawienia okna
@@ -79,19 +86,16 @@ public class OknoProgramu extends JPanel {
         Diagram modelDiagramu = new Diagram(new JezykSkladniPolski());
         jezyk = new JezykInterfejsuPolski();
         
-        // Deklaracje kontrolek GUI
+        // Deklaracje kontenerów GUI
         JMenuBar pasekMenu;
         JSplitPane panelGlowny;
         JPanel panelKonsoli;
         JScrollPane wewnetrznyPanelKonsoli;
-        JTextArea poleKonsoli;
         JSplitPane panelLewy;
         JPanel panelLewyZagniezdzony;
-        PanelDiagramu panelDiagramu;
         JPanel panelPrawy;
         JScrollPane panelTekstu;
         JScrollPane panelZDiagramem;
-        JTextArea poleTekstowe;
         
         // Pasek menu
         pasekMenu = new JMenuBar();
@@ -180,7 +184,7 @@ public class OknoProgramu extends JPanel {
         ustawNapisyNaKontrolkach();
         
         // Ustawienie listenera i komend akcji
-        listener = new KontrolerOkna(this, poleTekstowe, panelDiagramu, menuEdycjaCofnij, menuEdycjaPonow, poleKonsoli);
+        listener = new KontrolerOkna(this);
         
         menuPlikWczytaj.setActionCommand("PlikWczytaj");
         menuPlikWczytaj.addActionListener(listener);
@@ -213,7 +217,7 @@ public class OknoProgramu extends JPanel {
     }
     
     /**
-     * @param args the command line arguments
+     * Fukncja uruchamiająca okno.
      */
     public void start() {
         
@@ -225,24 +229,43 @@ public class OknoProgramu extends JPanel {
         });
     }
 
+    /**
+     * Akcesor do ramki głównego okna programu.
+     * @return 
+     */
     JFrame pobierzRamke() {
         return frame;
     }
 
+    /**
+     * Akcesor do języka interfejsu programu.
+     * @return 
+     */
     JezykInterfejsu pobierzJezyk() {
         return jezyk;
     }
     
+    /**
+     * Funkcja zwracająca informację, czy użytkownik życzy sobie odświeżania diagramu po każdej modyfikacji.
+     * @return 
+     */
     boolean autoodswiezanie() {
         return menuOpcjeAutoodswiezanie.getState();
     }
 
+    /** 
+     * Funkcja zmieniająca język interfejsu programu.
+     * @param 
+     */
     void ustawJezyk(JezykInterfejsu nowyJezyk) {
         jezyk = nowyJezyk;
         ustawNapisyNaKontrolkach();
         repaint();
     }
     
+    /**
+     * Funkcja dodaje napisy do kontrolek głównego okna programu.
+     */
     private void ustawNapisyNaKontrolkach() {        
         
         menuPlik.setText(jezyk.menuPlik());
@@ -269,5 +292,25 @@ public class OknoProgramu extends JPanel {
         kontrolkaKodZrodlowy.setText(jezyk.kontrolkaKodZrodlowy());
         kontrolkaDiagram.setText(jezyk.menuDiagram());
         
+    }
+
+    JTextArea pobierzPoleKonsoli() {
+        return poleKonsoli;
+    }
+
+    JTextArea pobierzPoleTekstowe() {
+        return poleTekstowe;
+    }
+
+    PanelDiagramu pobierzPanelDiagramu() {
+        return panelDiagramu;
+    }
+
+    JComponent pobierzPrzyciskCofania() {
+        return menuEdycjaCofnij;
+    }
+
+    JComponent pobierzPrzyciskPonawiania() {
+        return menuEdycjaPonow;
     }
 }

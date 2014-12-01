@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package kontroler;
 
 import java.awt.GridLayout;
@@ -18,8 +14,8 @@ import model.JezykSkladni;
 import model.JezykSkladniPolski;
 
 /**
- *
- * @author Michal
+ * Okno dialogowe, w którym użytkownik może wybrać język składnii i interfejsu.
+ * @author Michał Wróbel
  */
 public class OknoUstawienJezyka extends JDialog implements ActionListener {
           
@@ -28,21 +24,39 @@ public class OknoUstawienJezyka extends JDialog implements ActionListener {
     private ArrayList<JezykInterfejsu> jezykiInterfejsu;
     private ArrayList<JezykSkladni> jezykiSkladni;
     
-    JComboBox comboBoxInterfejsu;
-    JComboBox comboBoxSkladni;
+    private JComboBox comboBoxInterfejsu;
+    private JComboBox comboBoxSkladni;
     
+    /**
+     * Akcesor do wybranego języka interfejsu.
+     * @return 
+     */
     public JezykInterfejsu pobierzJezykInterfejsu () {
         return jezykiInterfejsu.get(comboBoxInterfejsu.getSelectedIndex());
     }
     
+    /**
+     * Akcesor do wybranego języka składnii.
+     * @return 
+     */
     public JezykSkladni pobierzJezykSkladni () {
         return jezykiSkladni.get(comboBoxSkladni.getSelectedIndex());
     }
     
+    /**
+     * Fonkcja zwracająca informację, czy użytkowin zatwierdził wprowadzone ustawienia, czy też je odrzucił..
+     * @return 
+     */
     public boolean zatwierdzono() {
         return zatwierdzoneZmiany;
     }
     
+    /**
+     * Konstruktor
+     * @param elementNadrzedny Okno, z którego zostało wywołane okienko dialogowe.
+     * @param naglowek Nazwa okna.
+     * @param jezyk Aktualny język interfejsu.
+     */
     public OknoUstawienJezyka (OknoProgramu elementNadrzedny, String naglowek, JezykInterfejsu jezyk) {
         
         super(elementNadrzedny.pobierzRamke(), naglowek, true);

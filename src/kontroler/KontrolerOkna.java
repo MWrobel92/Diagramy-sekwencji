@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package kontroler;
 
 import java.awt.event.ActionEvent;
@@ -11,9 +7,11 @@ import java.awt.event.WindowListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.LinkedList;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -32,12 +30,12 @@ import model.JezykSkladniPolski;
 import widok.PanelDiagramu;
 
 /**
- *
- * @author Michal
+ * Klasa będąca obiektem składowym okna programu. Zajmuje się nasłuchiwaniem zdarzeń, które od niego przychodzą.
+ * @author Michał Wróbel
  */
 public class KontrolerOkna implements ActionListener, CaretListener, WindowListener {
     
-    //Deklaracje elementów nadrzędnych
+    //Deklaracje elementów nadrzędnych, do których potrzebny jest dostęp
     private JezykInterfejsu jezyk;
     private JezykSkladni jezykS;
     private OknoProgramu elementNadrzedny;
@@ -55,32 +53,28 @@ public class KontrolerOkna implements ActionListener, CaretListener, WindowListe
     private String poprzedniTekst;
     
     //Deklaracje związane z obsługą plików
-    JFileChooser oknoObslugiPliku;
-    JFileChooser oknoEksportuDiagramu;
-    String ostatnioZapisanaWersja;
-    File aktualnyPlik;
+    private JFileChooser oknoObslugiPliku;
+    private JFileChooser oknoEksportuDiagramu;
+    private String ostatnioZapisanaWersja;
+    private File aktualnyPlik;
    
     /**
      * Konstruktor ustawiający wszystkie komponenty, do których listener musi mieć dostęp.
      * Widoczność komponentów cofania i ponawiania zostaje ustawiona automatycznie.
-     * @param poleTekstowe
-     * @param panelDiagramu
-     * @param przyciskCofnij
-     * @param przyciskPonow 
+     * @param elementNadrzedny Okno programu, które ma być sterowane.
      */
-    public KontrolerOkna (OknoProgramu elementNadrzedny, JTextArea poleTekstowe, PanelDiagramu panelDiagramu, JComponent przyciskCofnij, JComponent przyciskPonow, JTextArea poleKonsoli) {
+    public KontrolerOkna (OknoProgramu elementNadrzedny) {
         
         this.elementNadrzedny = elementNadrzedny;
         
         jezyk = elementNadrzedny.pobierzJezyk();
         jezykS = new JezykSkladniPolski();
         
-        this.poleKonsoli = poleKonsoli;
-                
-        this.poleTekstowe = poleTekstowe;
-        this.panelDiagramu = panelDiagramu;
-        this.przyciskCofania = przyciskCofnij;
-        this.przyciskPonawiania = przyciskPonow;
+        this.poleKonsoli = elementNadrzedny.pobierzPoleKonsoli();                
+        this.poleTekstowe = elementNadrzedny.pobierzPoleTekstowe();
+        this.panelDiagramu = elementNadrzedny.pobierzPanelDiagramu();
+        this.przyciskCofania = elementNadrzedny.pobierzPrzyciskCofania();
+        this.przyciskPonawiania = elementNadrzedny.pobierzPrzyciskPonawiania();
         
         listaCofania = new LinkedList<>();
         listaPonawiania = new LinkedList<>();
@@ -229,7 +223,10 @@ public class KontrolerOkna implements ActionListener, CaretListener, WindowListe
             File wybranyPlik = oknoObslugiPliku.getSelectedFile();
             
             try {
-                BufferedReader strumienWejsciowy = new BufferedReader(new FileReader(wybranyPlik));                
+                BufferedReader strumienWejsciowy = new BufferedReader(
+                    new InputStreamReader(new FileInputStream(wybranyPlik), "UTF-8")
+                    );  
+                
                 StringBuilder wczytanyTekst = new StringBuilder();
                 boolean pierwszaLinia = true;
                 
@@ -274,7 +271,10 @@ public class KontrolerOkna implements ActionListener, CaretListener, WindowListe
         boolean plikZostalZapisany = false;
     
         try {
-            BufferedWriter strumienWyjsciowy = new BufferedWriter(new FileWriter(aktualnyPlik));                                
+            BufferedWriter strumienWyjsciowy = new BufferedWriter(
+                    new OutputStreamWriter(new FileOutputStream(aktualnyPlik), "UTF-8")
+                    );         
+            
             strumienWyjsciowy.write(poleTekstowe.getText());
             strumienWyjsciowy.close();
   

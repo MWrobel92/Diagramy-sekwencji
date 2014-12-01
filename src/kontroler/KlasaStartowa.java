@@ -1,8 +1,8 @@
 package kontroler;
 
 /**
- * Klasa, która ma tylko uruchomić okno programu
- * @author Michal
+ * Klasa, która ma tylko uruchomić okno programu.
+ * @author Michał Wróbel
  */
 public class KlasaStartowa {
     

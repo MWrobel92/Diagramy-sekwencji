@@ -17,18 +17,28 @@ import javax.swing.JTextArea;
 import model.JezykInterfejsu;
 
 /**
- *
- * @author Michał
+ * Okno dialogowe posiadające trzy warianty odpowiedzi (tak, nie i anuluj).
+ * @author Michał Wróbel
  */
 public class OknoTakNieAnuluj extends JDialog implements ActionListener {
           
     private JezykInterfejsu jezyk;
     private String wynik;
     
+    /**
+     * Zwraca opcję wybraną przez użytkownika.
+     * @return Nasis "tak", "nie" lub "anuluj".
+     */
     public String zwrocRezultat() {
         return wynik;
     }
     
+    /**
+     * Konstruktor
+     * @param elementNadrzedny Okno, z którego zostało wywołane okienko dialogowe.
+     * @param naglowek Nazwa okna dialogowego.
+     * @param tresc Treść pytania wyświetlonego w oknie dialogowym.
+     */
     public OknoTakNieAnuluj (OknoProgramu elementNadrzedny, String naglowek, String tresc) {
         
         super(elementNadrzedny.pobierzRamke(), naglowek, true);

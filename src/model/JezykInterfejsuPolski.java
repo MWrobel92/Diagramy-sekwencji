@@ -1,10 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package model;
 
-
+/**
+ * Język interfejsu - polski.
+ * @author Michał Wróbel
+ */
 public class JezykInterfejsuPolski implements JezykInterfejsu {
 
     @Override
@@ -197,7 +196,7 @@ public class JezykInterfejsuPolski implements JezykInterfejsu {
 
     @Override
     public String bladNieistniejacyTypKomunikatu() {
-        return "Nie istieje typ komunikatu o nazwie ";
+        return "Nie istnieje typ komunikatu o nazwie ";
     }
 
     @Override

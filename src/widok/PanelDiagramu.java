@@ -25,7 +25,6 @@ import model.ObszarWydzielony;
  */
 public class PanelDiagramu extends JPanel {
     
-    JComponent elementMacierzysty;
     private Diagram modelDiagramu;
     
     private int wysokoscNaglowka;
@@ -43,12 +42,6 @@ public class PanelDiagramu extends JPanel {
     */
     public PanelDiagramu(Diagram modelDiagramu) {        
         ladujPonownie(modelDiagramu);
-        this.elementMacierzysty = null;
-    }
-    
-    public PanelDiagramu(JComponent elementNadrzedny, Diagram modelDiagramu) {        
-        ladujPonownie(modelDiagramu);
-        this.elementMacierzysty = elementNadrzedny;
     }
     
     /**
@@ -62,6 +55,10 @@ public class PanelDiagramu extends JPanel {
         szerokoscKratki = szerokosc;
     }
     
+    /**
+     * Funkcja odpowiadająca za rysowanie kontrolki
+     * @param g 
+     */
     @Override
     public void paint(Graphics g) {
         
@@ -90,6 +87,12 @@ public class PanelDiagramu extends JPanel {
         
     }
     
+    /**
+     * Funkcja rysująca obiekt (uczestnika diagramu)
+     * @param g
+     * @param o
+     * @param wspolrzednaKonca 
+     */
     private void rysujObiekt(Graphics g, Obiekt o, int wspolrzednaKonca) {
         
         // Punktów początkowych i końcowych nie rysujemy
@@ -148,6 +151,11 @@ public class PanelDiagramu extends JPanel {
         }
     }
 
+    /**
+     * Funkcja rysująca komunikat
+     * @param g
+     * @param k 
+     */
     private void rysujKomunikat(Graphics g, Komunikat k) {
         
         // Pobieramy dane w postaci współrzędnich siatki (nie w pikselach)
@@ -234,6 +242,11 @@ public class PanelDiagramu extends JPanel {
         }
     }
 
+    /**
+     * Funkcja rysująca obszar (blok) wydzielony.
+     * @param g
+     * @param ow 
+     */
     private void rysujObszarWydzielony(Graphics g, ObszarWydzielony ow) {
         
         // Odczytanie współrzędnych w jednokstach siatki (nie w pikselach).
@@ -294,7 +307,15 @@ public class PanelDiagramu extends JPanel {
         }
     }
     
-        private void rysujPionowaPrzerywanaLinie(Graphics g, int xStart, int yStart, int yKoniec) {  
+    /**
+     * Funkcja pomocnicza rysująca pionową przerywaną linię.
+     * @param g
+     * @param xStart
+     * @param yStart
+     * @param yKoniec 
+     */
+    private void rysujPionowaPrzerywanaLinie(Graphics g, int xStart, int yStart, int yKoniec) {  
+    
         if (yKoniec < yStart) {
             int t = yKoniec;
             yKoniec = yStart;
@@ -316,6 +337,14 @@ public class PanelDiagramu extends JPanel {
         }
     }
     
+    /**
+     * Funkcja rysująca grot strzałki.
+     * @param g
+     * @param x Współrzędna czubka grota
+     * @param y Współrzędna czubka grota
+     * @param wypelniona Informacja, czy grot ma być pełny
+     * @param wPrawo Informacja, czy strzałka jest skierowana w prawo
+     */
     private void rysujGrotStrzalki (Graphics g, int x, int y, boolean wypelniona, boolean wPrawo) {
         
         // Wyznakenie współrzędnej podstawy grota
@@ -342,6 +371,10 @@ public class PanelDiagramu extends JPanel {
             
     }
 
+    /**
+     * Funkcja ładująca model diagramu do kontrolki i generująca kontrolkę od nowa
+     * @param modelDiagramu 
+     */
     public void ladujPonownie(Diagram modelDiagramu) {
         
         this.modelDiagramu = modelDiagramu;
@@ -361,11 +394,14 @@ public class PanelDiagramu extends JPanel {
         }
         else {
             szerokoscKratki = szerokosc;
-        }        
+        }       
         
         odswiez();
     }
 
+    /**
+     * Funkcja osświeżająća kontrolkę
+     */
     public void odswiez() {
         
         // Ustawienie wymiarów kontrolki
@@ -385,6 +421,11 @@ public class PanelDiagramu extends JPanel {
         repaint();
     }
 
+    /**
+     * Funkcja eksportuje obraz przedstawiający diagram do pliku podanego jako parametr
+     * @param wybranyPlik
+     * @throws IOException 
+     */
     public void ekspotrujPlik(File wybranyPlik) throws IOException {
         
         BufferedImage zbuforowanyPlik = new BufferedImage(szerokoscSiatki*szerokoscKratki, wspolrzednaKonca, BufferedImage.TYPE_INT_RGB);

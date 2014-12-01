@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package kontroler;
 
 import java.awt.Frame;
@@ -18,11 +14,14 @@ import model.JezykInterfejsu;
 import model.JezykSkladni;
 
 /**
- *
- * @author Michal
+ * Okno wyświetlające pomoc użytkownika.
+ * @author Michał Wróbel
  */
 public class OknoPomocy extends JDialog implements TreeSelectionListener {
     
+    /**
+     * Klasa przechowująca informacje zapisane w pojedynczym węźle drzewa.
+     */
     private class informacjeWezla {
         
         private String naglowek;
@@ -33,6 +32,9 @@ public class OknoPomocy extends JDialog implements TreeSelectionListener {
             this.tresc = tresc;
         }
         
+        /**
+         * @return Zawatrość danej strony pomocy. 
+         */
         public String pobierzTresc() {
             return tresc;
         }
@@ -43,9 +45,16 @@ public class OknoPomocy extends JDialog implements TreeSelectionListener {
         }
     }
     
+    /** Drzewo zawierające wszystkie strony pomocy. */
     private JTree drzewoWyboruStony;
-    JEditorPane panelTekstu;
-
+    /** Kontrolka, w której wyświetlana jest aktualnie wybrana strona pomocy. */
+    private JEditorPane panelTekstu;
+    
+    /**
+     * Konstruktor
+     * @param jezyk Język interfejsu
+     * @param jezykS Język składni
+     */
     public OknoPomocy (JezykInterfejsu jezyk, JezykSkladni jezykS) {
         
         // Ogólne ostawienia okna
@@ -85,6 +94,10 @@ public class OknoPomocy extends JDialog implements TreeSelectionListener {
         
     }
 
+    /**
+     * Funkcja nasłuchująca zmiany wybranego węzła.
+     * @param e 
+     */
     @Override
     public void valueChanged(TreeSelectionEvent e) {
         
@@ -98,10 +111,8 @@ public class OknoPomocy extends JDialog implements TreeSelectionListener {
             }
             catch (Exception ex) {
                 informacje = ex.getMessage();
-            }
-            
-            panelTekstu.setText(informacje);
-            
+            }            
+            panelTekstu.setText(informacje);            
         }
     }
     

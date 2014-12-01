@@ -1,8 +1,8 @@
 package model;
 
 /**
- * Wyjątek rzucany w przypadku pojawienia się czegoś, co nie jest mozliwe do wygenerowania
- * @author Michal
+ * Wyjątek rzucany w przypadku błędu w składni kodu źródłowego.
+ * @author Micha
  */
 public class DiagramException extends Exception {
     
@@ -38,6 +38,12 @@ public class DiagramException extends Exception {
     public int nrLinii;
     
     
+    /**
+     * Konstruktor z jednym polem opisu.
+     * @param typ
+     * @param nrLinii
+     * @param opis1 
+     */
     public DiagramException(TypBledu typ, int nrLinii, String opis1) {
         this.typBledu = typ;
         this.opis1 = opis1;
@@ -45,6 +51,13 @@ public class DiagramException extends Exception {
         this.nrLinii = nrLinii;
     }
     
+    /**
+     * KOnstruktor z dwoma polami opisu.
+     * @param typ
+     * @param nrLinii
+     * @param opis1
+     * @param opis2 
+     */
     public DiagramException(TypBledu typ, int nrLinii, String opis1, String opis2) {
         this.typBledu = typ;
         this.opis1 = opis1;
@@ -52,6 +65,11 @@ public class DiagramException extends Exception {
         this.nrLinii = nrLinii;
     }
     
+    /**
+     * Funkcja wypisująca komunikat o błędzie.
+     * @param jezyk Język interfejsu, w którym ma zostać wygenerowany komunikat.
+     * @return 
+     */
     public String wypiszBlad (JezykInterfejsu jezyk) {
         
         StringBuilder komunikatBledu = new StringBuilder(jezyk.bladNaglowek());
@@ -157,8 +175,6 @@ public class DiagramException extends Exception {
             case "NIEOCZEKIWANY_ATRYBUT" :
                 komunikatBledu.append(jezyk.bladNieoczekiwanyAtrybut());
                 komunikatBledu.append(opis1);
-                komunikatBledu.append(" - ");
-                komunikatBledu.append(opis2);
                 break;
             case "NIEZDEFINIOWANY_ATRYBUT_OBOWIAZKOWY" :
                 komunikatBledu.append(jezyk.bladNiezdefiniowanyAtrybutObowiazkowy());
