@@ -308,13 +308,21 @@ public class KontrolerOkna implements ActionListener, CaretListener, WindowListe
         if (wynikOperacji == JFileChooser.APPROVE_OPTION) {
             
             // Wybrano plik do wczytania, można przejść do akcji
-            aktualnyPlik = oknoEksportuDiagramu.getSelectedFile();
+            File plikDiagramu = oknoEksportuDiagramu.getSelectedFile();
+            
+            // Dopisanie rozszerzenia jeśli jest taka potrzeba
+            String wybranyFiltr = oknoEksportuDiagramu.getFileFilter().getDescription();
+                    
+            if(wybranyFiltr.equals(jezyk.etykietaPlikPng()) && 
+                    !oknoEksportuDiagramu.getSelectedFile().getAbsolutePath().endsWith(".png")) {
+                plikDiagramu = new File(oknoEksportuDiagramu.getSelectedFile() + ".png");
+            }
                         
             try {
-                panelDiagramu.ekspotrujPlik(aktualnyPlik);
+                panelDiagramu.ekspotrujPlik(plikDiagramu);
                 plikZostalZapisany = true;
             }
-            catch (IOException ex) {
+            catch (Exception ex) {
                 JOptionPane.showMessageDialog(elementNadrzedny, jezyk.oknoBladZapisu());
             }
         }
