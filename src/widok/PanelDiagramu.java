@@ -3,15 +3,16 @@ package widok;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import javax.imageio.ImageIO;
-import javax.swing.JComponent;
 import model.Diagram;
 import javax.swing.JPanel;
 import model.Komunikat;
@@ -35,6 +36,8 @@ public class PanelDiagramu extends JPanel {
     private int szerokoscSiatki;
     
     private int wspolrzednaKonca;
+    
+    int[] nadmiaroweSzerokosciObiektow;
     
     /**
     * Konstruktor
@@ -63,11 +66,11 @@ public class PanelDiagramu extends JPanel {
     public void paint(Graphics g) {
         
         g.setColor(Color.white);
-        g.fillRect(0, 0, szerokoscSiatki*szerokoscKratki, wysokoscSiatki*wysokoscKratki+wysokoscNaglowka);
+        g.fillRect(0, 0, szerokoscSiatki*szerokoscKratki+skumulowanyNadmiar(szerokoscSiatki)+szerokoscKratki/2, wysokoscSiatki*wysokoscKratki+wysokoscNaglowka);
                 
         // Rysowanie tytułu
         g.setColor(Color.black);
-        g.drawRect(0, 0, 100, 25);
+        g.drawRect(0, 0, 100+wyliczNadmiarowaSzerokosc(g, modelDiagramu.nazwa(), 80), 25);
         g.drawString(modelDiagramu.nazwa(), 10, 20);
         
         // Rysowanie obiektów          
@@ -106,7 +109,7 @@ public class PanelDiagramu extends JPanel {
         int yKoniec;
         
         int i = o.zwrocIndeks();
-        int xStart = i*szerokoscKratki;
+        int xStart = i*szerokoscKratki+skumulowanyNadmiar(i);
         g.setColor(Color.black);
              
         if (o.zwrocPrzesuniecieKonca() == 0) {
@@ -127,11 +130,11 @@ public class PanelDiagramu extends JPanel {
             g.drawLine(xStart+ szerokoscKratki/2 -15 , y0 + 60, xStart+ szerokoscKratki/2 + 15, 60);
             g.drawLine(xStart+ szerokoscKratki/2, y0 + 75, xStart+ szerokoscKratki/2 - 10, 90);
             g.drawLine(xStart+ szerokoscKratki/2, y0 + 75, xStart+ szerokoscKratki/2 + 10, 90);
-            g.drawString(o.pelnaNazwa(), xStart+10, y0 + wysokoscNaglowka-15);
+            g.drawString(o.pelnaNazwa(), xStart+15, y0 + wysokoscNaglowka-15);
         }
         else {
             //Rysowanie zwykłego prostokąta
-            g.drawRect(xStart+10, y0 + wysokoscNaglowka-50, szerokoscKratki-20, 35);
+            g.drawRect(xStart+10, y0 + wysokoscNaglowka-50, szerokoscKratki-20+nadmiaroweSzerokosciObiektow[i], 35);
             g.drawString(o.pelnaNazwa(), xStart+15, y0 + wysokoscNaglowka-30);
         }        
             
@@ -173,8 +176,8 @@ public class PanelDiagramu extends JPanel {
         if (xStart != xKoniec) { // Komunikat łączy dwa obiekty
             
             // Wyliczanie współrzędnych
-            x1 = xStart * szerokoscKratki + szerokoscKratki / 2;
-            x2 = xKoniec * szerokoscKratki + szerokoscKratki / 2;
+            x1 = xStart * szerokoscKratki + szerokoscKratki / 2 + skumulowanyNadmiar(xStart);
+            x2 = xKoniec * szerokoscKratki + szerokoscKratki / 2 + skumulowanyNadmiar(xKoniec);
             y = yStart * wysokoscKratki + wysokoscNaglowka + wysokoscKratki / 2;
             
             if (k.jestTworzeniem()) {
@@ -219,7 +222,7 @@ public class PanelDiagramu extends JPanel {
             // Wyliczanie współrzędnych
             int y1 = (yStart-1) * wysokoscKratki + wysokoscNaglowka + wysokoscKratki / 2;
             int y2 = yStart * wysokoscKratki + wysokoscNaglowka + wysokoscKratki / 2;                
-            x2 = (xStart+1) * szerokoscKratki;
+            x2 = (xStart+1) * szerokoscKratki + skumulowanyNadmiar(xStart);
             x1 = x2 - szerokoscKratki / 2;
             
             // Rysowanie linii
@@ -268,12 +271,12 @@ public class PanelDiagramu extends JPanel {
         }
         
         // Wyliczenie watości w pikselach
-        int x1 = xStart * szerokoscKratki + szerokoscKratki / 8; // Początek bloku
-        int xs = (xKoniec - xStart + 1) * szerokoscKratki - szerokoscKratki / 4; // Wysokość bloku
-        int y1 = yStart * wysokoscKratki + wysokoscNaglowka + wysokoscKratki / 4;        
-        int ys = (yKoniec - yStart + 1) * wysokoscKratki - wysokoscKratki / 2;
+        int x1 = xStart * szerokoscKratki + szerokoscKratki / 8  + skumulowanyNadmiar(xStart); // Początek bloku
+        int xs = (xKoniec - xStart + 1) * szerokoscKratki - szerokoscKratki / 4 + skumulowanyNadmiar(xKoniec) - skumulowanyNadmiar(xStart); // Szerokosc bloku
+        int y1 = yStart * wysokoscKratki + wysokoscNaglowka + wysokoscKratki / 8;        
+        int ys = (yKoniec - yStart + 1) * wysokoscKratki - wysokoscKratki / 4;
                 
-        int szerokoscEtykiety = szerokoscKratki / 2;
+        int szerokoscEtykiety = szerokoscKratki / 2 + this.wyliczNadmiarowaSzerokosc(g, ow.nazwa(), szerokoscKratki / 2 - 20);
         
         // Narysowanie głównego prostokąta
         g.setColor(Color.black);
@@ -295,15 +298,14 @@ public class PanelDiagramu extends JPanel {
         
         // Rysowanie napisów
         g.drawString(ow.nazwa(), x1+5, y1+13);
-        String komentarz = ow.zwrocKomantarz();
+        String komentarz = ow.zwrocKomentarz();
         if (!komentarz.isEmpty()) {
             if (tylkoJednaKratka) { // Narysuj pod etykietą
                 g.drawString("[" + komentarz + "]", x1+10, y1+30);
             }
             else { // Narysuj obok etykiety
                 g.drawString("[" + komentarz + "]", x1+szerokoscEtykiety+5, y1+13);
-            }
-            
+            }            
         }
     }
     
@@ -404,8 +406,19 @@ public class PanelDiagramu extends JPanel {
      */
     public void odswiez() {
         
+        // Wyliczenie nadmiarowych szerokości kolumn
+        int wymiarNadmiarowy = 0;
+        int liczbaObiektow = modelDiagramu.zwrocLiczbeObiektow();
+        nadmiaroweSzerokosciObiektow = new int[liczbaObiektow];
+        LinkedList<Obiekt> listaObiektow = modelDiagramu.zwrocListeObiektow();
+        for (int i = 0; i < liczbaObiektow; ++i) {
+            int nadmiar = wyliczNadmiarowaSzerokosc(getGraphics(), listaObiektow.get(i).pelnaNazwa(), szerokoscKratki-30);
+            wymiarNadmiarowy += nadmiar;
+            nadmiaroweSzerokosciObiektow[i] = nadmiar;
+        }
+        
         // Ustawienie wymiarów kontrolki
-        szerokoscSiatki = modelDiagramu.zwrocLiczbeObiektow();
+        szerokoscSiatki = liczbaObiektow;
         wysokoscSiatki = modelDiagramu.zwrocLiczbeWierszy();
         wspolrzednaKonca = wysokoscNaglowka + wysokoscSiatki*wysokoscKratki;  
         
@@ -414,8 +427,8 @@ public class PanelDiagramu extends JPanel {
             szerokoscSiatki = 1;
         }
         
-        setSize(szerokoscSiatki*szerokoscKratki, wspolrzednaKonca);        
-        setPreferredSize(new Dimension(szerokoscSiatki*szerokoscKratki, wspolrzednaKonca));
+        setSize((szerokoscSiatki+1)*szerokoscKratki + wymiarNadmiarowy, wspolrzednaKonca);        
+        setPreferredSize(new Dimension((szerokoscSiatki+1)*szerokoscKratki + wymiarNadmiarowy, wspolrzednaKonca));
         
         revalidate();
         repaint();
@@ -432,6 +445,47 @@ public class PanelDiagramu extends JPanel {
         Graphics2D g = zbuforowanyPlik.createGraphics();
         paint(g);
         ImageIO.write(zbuforowanyPlik, "png", wybranyPlik);
+    }
+    
+    /**
+     * Funkcja mierząca szerokość tekstu do wypisania
+     * @param g Obiekt typu Graphics używany do rysowania.
+     * @param tekst Tekst, którego szerokość ma być zmierzona.
+     * @return Szerokość tekstu w pikselach
+     */
+    private int wyliczNadmiarowaSzerokosc(Graphics g, String tekst, int planowanaLiczbaPikseli) {
+        
+        // Wyliczenie szerokosci tekstu
+        FontMetrics metrics = g.getFontMetrics();
+        int szerokosc = metrics.stringWidth(tekst);
+        
+        // Odjęcie planowanej szerokośći od wyliczonej szerokości w celu obliczenia nadmiaru
+        int nadmiar = 0;
+        if (szerokosc > planowanaLiczbaPikseli) {
+            nadmiar = szerokosc - planowanaLiczbaPikseli;
+        }
+        return nadmiar;
+    }
+    
+    /**
+     * Funkcja zwraca sumę nadmiarowych długości napisów w kolumnach o indeksie mniejszym od podanego parametru.
+     * @param nrKolumny
+     * @return 
+     */
+    private int skumulowanyNadmiar(int nrKolumny) {
+        
+        int stop = nrKolumny;
+        if (stop > modelDiagramu.zwrocLiczbeObiektow()) {
+            stop = modelDiagramu.zwrocLiczbeObiektow();
+        } 
+        
+        int wynik = szerokoscKratki/2; // Żeby był margines
+        
+        for (int i=0; i<stop; ++i) {
+            wynik += nadmiaroweSzerokosciObiektow[i];
+        }
+        
+        return wynik;
     }
 }
 

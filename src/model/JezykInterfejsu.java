@@ -13,8 +13,12 @@ public interface JezykInterfejsu {
     public String menuPlikWczytaj();
     public String menuPlikZapisz();
     public String menuPlikZapiszJako();
+    public String menuPlikZamknij();
     public String menuEdycjaCofnij();
     public String menuEdycjaPonow();
+    public String menuEdycjaWytnij();
+    public String menuEdycjaKopiuj();
+    public String menuEdycjaWklej();
     public String menuEdycjaWstaw();
     public String menuEdycjaWstawAktora();
     public String menuEdycjaWstawKomunikat();
@@ -90,6 +94,19 @@ public interface JezykInterfejsu {
     public String pomocPlikiTresc();
     public String pomocGenerowanieDiagramu();
     public String pomocGenerowanieDiagramuTresc();
-    
+
+    public String etykietaNazwaPliku();
+    public String etykietaTypPliku();
+    public String etykietaModyfikuj();
+    public String etykietaWszystkiePliki();
+    public String etykietaPrzegladaj();
+    public String etykietaZapiszDo();
+    public String etykietaWGore();
+    public String etykietaPulpit();
+    public String etykietaNowyFolder();
+    public String etykietaLista();
+    public String etykietaSzczegoly();
+    public String etykietaPlikUml();
+    public String etykietaPlikPng();
 
 }

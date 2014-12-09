@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- *
+ * KLasa reprezenująca obiekt - uczestnika diagramu
  * @author Michał Wróbel
  */
 public class Obiekt extends ElementDiagramu {

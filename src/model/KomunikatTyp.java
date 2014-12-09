@@ -1,8 +1,8 @@
 package model;
 
 /**
- *
- * @author Michal
+ * Typ wyliczeniowy reprezentujący różne typy komunikatów.
+ * @author Michał Wróbel
  */
 public enum KomunikatTyp {
     

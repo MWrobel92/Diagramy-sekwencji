@@ -1,14 +1,14 @@
 package model;
 
 /**
- *
+ * Klasa reprezentująca obszar wydzielony
  * @author Michał Wróbel
  */
 public class ObszarWydzielony extends ElementPoziomy {
     
     String komentarz;
     
-    public String zwrocKomantarz() {
+    public String zwrocKomentarz() {
         return komentarz;
     }
     
@@ -22,6 +22,10 @@ public class ObszarWydzielony extends ElementPoziomy {
         
     }
     
+    /**
+     * Akcesor do wysokości bloku wyrażonej w liczbie wierszy.
+     * @return 
+     */
     public int zwrocWysokoscBloku() {
         return wysokoscBloku;
     }

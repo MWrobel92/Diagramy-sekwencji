@@ -42,6 +42,11 @@ public class DaneObiektu {
         przetworz(listaAtrybutow);
     }
         
+    /**
+     * Przetwarza listę atrybutów na dane opisujące obiekt.
+     * @param atrybuty Lista atrybutów.
+     * @throws DiagramException W przypadku błędnych atrybutów.
+     */
     private void przetworz(List<AtrybutKomendy> atrybuty) throws DiagramException {
         
         // Przetworzenie listy komend

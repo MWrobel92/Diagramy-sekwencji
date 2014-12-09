@@ -6,7 +6,7 @@ package model;
 
 
 /**
- *
+ * Klasa reprezentująca pojedynczy atrybut komendy.
  * @author Michal
  */
 public class AtrybutKomendy {
@@ -17,6 +17,13 @@ public class AtrybutKomendy {
     JezykSkladni jezyk;
     int nrLinii;
     
+    /**
+     * Konstruktor.
+     * @param identyfikator Nazwa atrybutu (to, co w tekście źródłowym znajduje się przed znakiem równości)
+     * @param cialo Wartość atrybutu (to, co w tekście źródłowym znajduje się za znakiem równości)
+     * @param nrLinii Nr linii w kodzie źródłowym programu, w której znajduje się atrybut (potrzebne do dokładnego rzucania wyjątków) 
+     * @param jezyk Używany język składni.
+     */
     public AtrybutKomendy(String identyfikator, String cialo, int nrLinii, JezykSkladni jezyk) {
         
         this.identyfikator = identyfikator;
@@ -29,6 +36,9 @@ public class AtrybutKomendy {
         
     }
     
+    /**
+     * Usuwa początkowy i końcowy cudzysłów (jeśli oba istnieją)
+     */
     private void przytnij() {
         
         if ((cialo.startsWith("\"")) && (cialo.endsWith("\""))) {
@@ -54,66 +64,82 @@ public class AtrybutKomendy {
         return rezultat;
     }
     
+    /** Sprawdza, czy atrybut jest atrybutem nazwy */
     public boolean atrybutNazwy () {
         return identyfikator.equals(jezyk.atrybutNazwa());
     }
 
+    /** Sprawdza, czy atrybut jest atrybutem szerokości */
     public boolean atrybutSzerokosci() {
         return identyfikator.equals(jezyk.atrybutSzerokosc());
     }
 
+    /** Sprawdza, czy atrybut jest atrybutem wysokości */
     public boolean atrybutWysokosci() {
         return identyfikator.equals(jezyk.atrybutWysokosc());
     }
 
+    /** Sprawdza, czy atrybut jest atrybutem nazwy klasy (selektora) */
     public boolean atrybutNazwyKlasy() {
         return identyfikator.equals(jezyk.atrybutKlasa());
     }
 
+    /** Sprawdza, czy atrybut jest atrybutem typu */
     public boolean atrybutTypu() {
         return identyfikator.equals(jezyk.atrybutTyp());
     }
 
+    /** Sprawdza, czy atrybut jest atrybutem obiektu startowego */
     boolean atrybutObiektuStartowego() {
         return identyfikator.equals(jezyk.atrybutObiektuStartowego());
     }
     
+    /** Sprawdza, czy atrybut jest atrybutem obiektu końcowego */
     boolean atrybutObiektuKoncowego() {
         return identyfikator.equals(jezyk.atrybutObiektuKoncowego());
     }
 
+    /** Sprawdza, czy atrybut jest atrybutem wiersza */
     boolean atrybutWymuszeniaWiersza() {
         return identyfikator.equals(jezyk.atrybutNrWiersza());
     }
 
+    /** Sprawdza, czy atrybut jest atrybutem etykiety */
     boolean atrybutEtykiety() {
         return identyfikator.equals(jezyk.atrybutEtykieta());
     }
 
+    /** Sprawdza, czy atrybut jest atrybutem wysokości bloku */
     boolean atrybutWysokosciBloku() {
         return identyfikator.equals(jezyk.atrybutWysokoscBloku());
     }
 
+    /** Sprawdza, czy atrybut jest atrybutem wymuszenia równoległości */
     boolean atrybutWymuszeniaRownoleglosci() {
         return identyfikator.equals(jezyk.atrybutSamodzielny());
     }
 
+    /** Sprawdza, czy atrybut jest atrybutem komentarza */
     boolean atrybutKomentarza() {
         return identyfikator.equals(jezyk.atrybutKomentarz());
     }
 
+    /** Sprawdza, czy atrybut jest atrybutem względnego położenia */
     boolean atrybutWzglednegoPolozenia() {
         return identyfikator.equals(jezyk.atrybutObok());
     }
 
+    /** Sprawdza, czy atrybut jest drugim atrybutem względnego położenia */
     boolean drugiAtrybutWzglednegoPolozenia() {
         return identyfikator.equals(jezyk.atrybutDoWiersza());
     }
 
+    /** Sprawdza, czy atrybut jest atrybutem identyfikatora */
     boolean atrybutIdentyfikatora() {
         return identyfikator.equals(jezyk.atrybutId());
     }
 
+    /** Sprawdza, czy atrybut jest atrybutem życia */
     boolean atrybutZycia() {
         return identyfikator.equals(jezyk.atrybutZycie());
     }

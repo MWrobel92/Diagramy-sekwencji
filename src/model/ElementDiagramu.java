@@ -1,7 +1,7 @@
 package model;
 
 /**
- *
+ * Klasa abstrakcyjna przedstawiająca dowolny element diagramu.
  * @author Michał Wróbel
  */
 public abstract class ElementDiagramu {

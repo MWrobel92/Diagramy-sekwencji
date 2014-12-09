@@ -1,7 +1,8 @@
 package model;
 
 /**
- * @author Michal
+ * Klasa abstrakcyjna przedstawiająca poziomy element diagramu (komunikat lub blok wydzielony).
+ * @author Michał Wróbel
  */
 public abstract class ElementPoziomy extends ElementDiagramu {
     

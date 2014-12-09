@@ -105,12 +105,17 @@ public class KontrolerOkna implements ActionListener, CaretListener, WindowListe
             case "PlikZapiszJako" :
                 zapiszPlikJako();
                 break;
+            case "PlikZamknij" :
+                if (skonsultujZapis()) {
+                    elementNadrzedny.pobierzRamke().dispose();
+                }
+                break;
             case "EdycjaCofnij":
                 listaPonawiania.add(poprzedniTekst);
                 poprzedniTekst = listaCofania.pollLast();
                 poleTekstowe.removeCaretListener(this);
                 poleTekstowe.setText(poprzedniTekst);
-                uruchomGenerowanieDiagramu();
+                uruchomGenerowanieDiagramu(false);
                 poleTekstowe.addCaretListener(this);
                 ustawWidocznoscCofania();
                 break;
@@ -119,7 +124,7 @@ public class KontrolerOkna implements ActionListener, CaretListener, WindowListe
                 poprzedniTekst = listaPonawiania.pollLast();
                 poleTekstowe.removeCaretListener(this);
                 poleTekstowe.setText(poprzedniTekst);
-                uruchomGenerowanieDiagramu();
+                uruchomGenerowanieDiagramu(false);
                 poleTekstowe.addCaretListener(this);
                 ustawWidocznoscCofania();
                 break;
@@ -136,7 +141,7 @@ public class KontrolerOkna implements ActionListener, CaretListener, WindowListe
                 ustawieniaJezyka();
                 break;
             case "DiagramGeneruj" :
-                generujDiagram(true);
+                uruchomGenerowanieDiagramu(true);
                 break;
             case "DiagramZapisz" :
                 eksportujDiagram();
@@ -159,7 +164,7 @@ public class KontrolerOkna implements ActionListener, CaretListener, WindowListe
             
             // Generowanie diagramu (w osobnym wątku)
             if (elementNadrzedny.autoodswiezanie()) {
-                uruchomGenerowanieDiagramu();
+                uruchomGenerowanieDiagramu(false);
             }
             
             // Obsługa cofania
@@ -167,6 +172,9 @@ public class KontrolerOkna implements ActionListener, CaretListener, WindowListe
             listaPonawiania.clear();
             poprzedniTekst = aktualnyTekst;
             ustawWidocznoscCofania();
+            
+            // Wyznaczenie linii
+            elementNadrzedny.ponumerujLinie();
           
         }
         
@@ -188,27 +196,6 @@ public class KontrolerOkna implements ActionListener, CaretListener, WindowListe
             przyciskPonawiania.setEnabled(true);
         }
         
-    }
-    
-    /**
-     * 
-     * @param oknoPotwierdzenia Jeśli true, wystąpienie błędu będzie zasygnalizowane messageboksem.
-     */    
-    private void generujDiagram(boolean oknoPotwierdzenia) {
-        
-        try {
-            AnalizatorTekstu analizator = new AnalizatorTekstu(jezykS);
-           
-            Diagram modelDiagramu = analizator.przygotujDiagram(poleTekstowe.getText());
-            panelDiagramu.ladujPonownie(modelDiagramu);
-            poleKonsoli.setText(jezyk.komunikatPoprawnaKompilacja());
-            
-        } catch (DiagramException ex) {
-            poleKonsoli.setText(ex.wypiszBlad(jezyk));
-            if (oknoPotwierdzenia) {
-                JOptionPane.showMessageDialog(elementNadrzedny, jezyk.oknoBladKompilacji(), jezyk.bladNaglowek(), JOptionPane.WARNING_MESSAGE);
-            }                        
-        }
     }
     
     private boolean wczytajPlik () {   
@@ -296,7 +283,16 @@ public class KontrolerOkna implements ActionListener, CaretListener, WindowListe
         
         if (wynikOperacji == JFileChooser.APPROVE_OPTION) {            
             // Wybrano plik do wczytania, można przejść do akcji
-            aktualnyPlik = oknoObslugiPliku.getSelectedFile();            
+            aktualnyPlik = oknoObslugiPliku.getSelectedFile();   
+            
+            // Dopisanie rozszerzenia jeśli jest taka potrzeba
+            String wybranyFiltr = oknoObslugiPliku.getFileFilter().getDescription();
+                    
+            if(wybranyFiltr.equals(jezyk.etykietaPlikUml()) && 
+                    !oknoObslugiPliku.getSelectedFile().getAbsolutePath().endsWith(".uml")) {
+                aktualnyPlik = new File(oknoObslugiPliku.getSelectedFile() + ".uml");
+            }
+            
             plikZostalZapisany = zapiszPlik();
         }
         
@@ -332,10 +328,12 @@ public class KontrolerOkna implements ActionListener, CaretListener, WindowListe
         ostatnioZapisanaWersja = "";
         aktualnyPlik = null;
         
-        oknoObslugiPliku = new JFileChooser(); 
+        oknoObslugiPliku = new JFileChooser();        
+        FileFilter filtrUml = new FileNameExtensionFilter(jezyk.etykietaPlikUml(), "uml");
+        oknoObslugiPliku.setFileFilter(filtrUml);
         
         oknoEksportuDiagramu = new JFileChooser();
-        FileFilter filtrPng = new FileNameExtensionFilter("Plik PNG", "png");
+        FileFilter filtrPng = new FileNameExtensionFilter(jezyk.etykietaPlikPng(), "png");
         oknoEksportuDiagramu.setFileFilter(filtrPng);
         
     }
@@ -482,16 +480,39 @@ public class KontrolerOkna implements ActionListener, CaretListener, WindowListe
         if (okno.zatwierdzono()) {
             elementNadrzedny.ustawJezyk(okno.pobierzJezykInterfejsu());
             jezykS = okno.pobierzJezykSkladni();
+            oknoObslugiPliku.revalidate();
         }
     }
 
-    private void uruchomGenerowanieDiagramu() {
-        Thread watek = new Thread(new Runnable() {                
+    /**
+     * Funkcja generująca diagram w osobnym wątku.
+     * @param oknoPotwierdzenia Jeśli true, błąd w generowaniu wykresu zostanie wyświetlony w oknie dialogowym
+     */
+    private void uruchomGenerowanieDiagramu(boolean oknoPotwierdzenia) {
+        
+        final boolean okno = oknoPotwierdzenia;        
+        Thread watek = new Thread(new Runnable() {               
                     
             @Override
-                public void run() {
-                    generujDiagram(false);
-                };
-            });
-            watek.start();}
+            public void run() {
+                    
+                try {
+                    AnalizatorTekstu analizator = new AnalizatorTekstu(jezykS);
+           
+                    Diagram modelDiagramu = analizator.przygotujDiagram(poleTekstowe.getText());
+                    panelDiagramu.ladujPonownie(modelDiagramu);
+                    poleKonsoli.setText(jezyk.komunikatPoprawnaKompilacja());
+            
+                } catch (DiagramException ex) {
+                    poleKonsoli.setText(ex.wypiszBlad(jezyk));
+                    if (okno) {
+                        JOptionPane.showMessageDialog(elementNadrzedny, jezyk.oknoBladKompilacji(), jezyk.bladNaglowek(), JOptionPane.WARNING_MESSAGE);
+                    }                        
+                }
+            };
+        });
+        
+        watek.start();
+    }
+    
 }

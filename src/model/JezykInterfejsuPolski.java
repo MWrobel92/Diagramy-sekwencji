@@ -40,7 +40,12 @@ public class JezykInterfejsuPolski implements JezykInterfejsu {
     public String menuPlikZapiszJako() {
         return "Zapisz jako";
     }
-
+    
+    @Override
+    public String menuPlikZamknij() {
+        return "Zamknij";
+    }
+    
     @Override
     public String menuEdycjaCofnij() {
         return "Cofnij";
@@ -49,6 +54,21 @@ public class JezykInterfejsuPolski implements JezykInterfejsu {
     @Override
     public String menuEdycjaPonow() {
         return "Ponów";
+    }
+    
+    @Override
+    public String menuEdycjaWytnij() {
+        return "Wytnij";
+    }
+    
+    @Override
+    public String menuEdycjaKopiuj() {
+        return "Kopiuj";
+    }
+    
+    @Override
+    public String menuEdycjaWklej() {
+        return "Wklej";
     }
 
     @Override
@@ -610,6 +630,71 @@ public class JezykInterfejsuPolski implements JezykInterfejsu {
         sb.append("”.");
         sb.append("</p></html>");
         return sb.toString();
+    }
+
+    @Override
+    public String etykietaNazwaPliku() {
+        return "Nazwa pliku:";
+    }
+
+    @Override
+    public String etykietaTypPliku() {
+        return "Pliki typu:";
+    }
+
+    @Override
+    public String etykietaModyfikuj() {
+        return "Modyfikuj";
+    }
+
+    @Override
+    public String etykietaWszystkiePliki() {
+        return "Wszystkie pliki";
+    }
+
+    @Override
+    public String etykietaPrzegladaj() {
+        return "Przeglądaj:";
+    }
+
+    @Override
+    public String etykietaZapiszDo() {
+        return "Zapisz do:";
+    }
+
+    @Override
+    public String etykietaWGore() {
+        return "W górę o jeden poziom:";
+    }
+
+    @Override
+    public String etykietaPulpit() {
+        return "Pulpit";
+    }
+
+    @Override
+    public String etykietaNowyFolder() {
+        return "Utwórz nowy folder";
+    }
+
+    @Override
+    public String etykietaLista() {
+        return "Lista";
+    }
+
+    @Override
+    public String etykietaSzczegoly() {
+        return "Szczegóły";
+    }
+    
+    @Override
+    public String etykietaPlikUml() {
+        return "Plik diagramu UML";
+    }
+    
+    @Override
+    public String etykietaPlikPng() {
+        return "Plik PNG";
     }
     
 }

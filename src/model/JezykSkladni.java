@@ -1,12 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package model;
 
 /**
- *
- * @author Michal
+ * Interfejs odpowiedzialny za składnię tekstu źródłowego - nazwy koment, atrybutów itp.
+ * @author Michał Wróbel
  */
 public interface JezykSkladni {
 

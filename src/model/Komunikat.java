@@ -1,7 +1,7 @@
 package model;
 
 /**
- *
+ * Klasa reprezentująca komunikat przezyłany pomiędzy obiektami
  * @author Michał Wróbel
  */
 public class Komunikat extends ElementPoziomy {

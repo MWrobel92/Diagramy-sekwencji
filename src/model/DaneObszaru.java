@@ -49,6 +49,11 @@ public class DaneObszaru {
         przetworz(listaAtrybutow);
     }
         
+    /**
+     * Przetwarza listę atrybutów na dane opisujące obszar (blok) wydzielony.
+     * @param atrybuty Lista atrybutów.
+     * @throws DiagramException W przypadku błędnych atrybutów.
+     */
     private void przetworz(List<AtrybutKomendy> atrybuty) throws DiagramException {
         
         boolean zdefiniowanaDomyslnaRownoleglosc = false;

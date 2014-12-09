@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 /**
  * Klasa zajmująca się tworzeniem modelu na podstawie pliku tekstowego.
- * @author Michal
+ * @author Michał Wróbel
  */
 public class AnalizatorTekstu {
     
@@ -14,7 +14,13 @@ public class AnalizatorTekstu {
         jezykS = jezyk;
     }
     
-    public LinkedList<Komenda> wyodrebnijKomendy (String tekstWejsciowy) throws DiagramException {
+    /**
+     * Zamienia tekst podany jako parametr na listę komend.
+     * @param tekstWejsciowy
+     * @return
+     * @throws DiagramException 
+     */
+    private LinkedList<Komenda> wyodrebnijKomendy (String tekstWejsciowy) throws DiagramException {
         
         tekstWejsciowy = tekstWejsciowy + ' '; // Żeby zawsze kończyło się białym znakiem
         
@@ -64,7 +70,6 @@ public class AnalizatorTekstu {
                 if (c == '{') {
                     //Zapisujemy identyfikator i przechodzimy do ciała pętli
                     tymczasowyIdentyfikator = bufor.toString();
-                    nrLiniiPoczatkuKomendy = nrLinii;
                     bufor = new StringBuilder();
                     wnetrzeIdentyfikatora = false;
                     wnetrzeCiala = true;
@@ -130,6 +135,7 @@ public class AnalizatorTekstu {
                 //Czekamy na znak niebędący białym, który będzie początkiem identyfikatora
                 if (!Character.isWhitespace(c)) {
                     wnetrzeIdentyfikatora = true;
+                    nrLiniiPoczatkuKomendy = nrLinii;
                     bufor.append(c);
                 }                
             }            
@@ -148,6 +154,12 @@ public class AnalizatorTekstu {
         return komendy;
     }
     
+    /**
+     * Funkcja przygotowuje przetwarza tekst źródłowy na model diagramu.
+     * @param tekstWejsciowy Kod źródłowy diagramu.
+     * @return Obiekt reprezentujący diagram.
+     * @throws DiagramException Jeśli tekst źródłowy zawiera błędy.
+     */
     public Diagram przygotujDiagram (String tekstWejsciowy) throws DiagramException {
         
         Diagram diagram = new Diagram(jezykS);
