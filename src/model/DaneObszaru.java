@@ -6,10 +6,8 @@ import java.util.List;
  * Ta klasa przechowuje dane, które następnie mogą zostać wykorzystane do utworzenia nowego obszaru wydzielonego.
  * @author Michał Wróbel
  */
-public class DaneObszaru {
+public class DaneObszaru  extends DaneElementu  {
     
-    /** Nazwa obszaru - element obowiązkowy */
-    String nazwa;
     /** Nazwa identyfikatora (null oznacza używanie nazwy jako identyfikatora) */
     String identyfikator;
     /** Wiadomość, która wyświetli się wewnątrz obszaru wydzielonego */

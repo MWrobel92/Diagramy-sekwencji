@@ -22,12 +22,12 @@ public class OknoPomocy extends JDialog implements TreeSelectionListener {
     /**
      * Klasa przechowująca informacje zapisane w pojedynczym węźle drzewa.
      */
-    private class informacjeWezla {
+    private class InformacjeWezla {
         
         private String naglowek;
         private String tresc;
         
-        informacjeWezla(String naglowek, String tresc) {
+        InformacjeWezla(String naglowek, String tresc) {
             this.naglowek = naglowek;
             this.tresc = tresc;
         }
@@ -63,23 +63,23 @@ public class OknoPomocy extends JDialog implements TreeSelectionListener {
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         
         // Przygotowanie drzewa
-        DefaultMutableTreeNode korzen = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocOgolna(), jezyk.pomocOgolnaTresc()));
+        DefaultMutableTreeNode korzen = new DefaultMutableTreeNode(new InformacjeWezla(jezyk.pomocOgolna(), jezyk.pomocOgolnaTresc()));
         drzewoWyboruStony = new JTree(korzen);       
         drzewoWyboruStony.addTreeSelectionListener(this);
         
-        DefaultMutableTreeNode elementy = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocSkladnia(), jezyk.pomocSkladniaTresc(jezykS)));
+        DefaultMutableTreeNode elementy = new DefaultMutableTreeNode(new InformacjeWezla(jezyk.pomocSkladnia(), jezyk.pomocSkladniaTresc(jezykS)));
         korzen.add(elementy);
-        DefaultMutableTreeNode diagram = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocDiagram(), jezyk.pomocDiagramTresc(jezykS)));
+        DefaultMutableTreeNode diagram = new DefaultMutableTreeNode(new InformacjeWezla(jezyk.pomocDiagram(), jezyk.pomocDiagramTresc(jezykS)));
         elementy.add(diagram);
-        DefaultMutableTreeNode obiekty = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocObiekty(), jezyk.pomocObiektyTresc(jezykS)));
+        DefaultMutableTreeNode obiekty = new DefaultMutableTreeNode(new InformacjeWezla(jezyk.pomocObiekty(), jezyk.pomocObiektyTresc(jezykS)));
         elementy.add(obiekty);
-        DefaultMutableTreeNode komunikaty = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocKomunikaty(), jezyk.pomocKomunikatyTresc(jezykS)));
+        DefaultMutableTreeNode komunikaty = new DefaultMutableTreeNode(new InformacjeWezla(jezyk.pomocKomunikaty(), jezyk.pomocKomunikatyTresc(jezykS)));
         elementy.add(komunikaty);
-        DefaultMutableTreeNode bloki = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocBloki(), jezyk.pomocBlokiTresc(jezykS)));
+        DefaultMutableTreeNode bloki = new DefaultMutableTreeNode(new InformacjeWezla(jezyk.pomocBloki(), jezyk.pomocBlokiTresc(jezykS)));
         elementy.add(bloki);
-        DefaultMutableTreeNode generowanie = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocGenerowanieDiagramu(), jezyk.pomocGenerowanieDiagramuTresc()));
+        DefaultMutableTreeNode generowanie = new DefaultMutableTreeNode(new InformacjeWezla(jezyk.pomocGenerowanieDiagramu(), jezyk.pomocGenerowanieDiagramuTresc()));
         korzen.add(generowanie);
-        DefaultMutableTreeNode pliki = new DefaultMutableTreeNode(new informacjeWezla(jezyk.pomocPliki(), jezyk.pomocPlikiTresc()));
+        DefaultMutableTreeNode pliki = new DefaultMutableTreeNode(new InformacjeWezla(jezyk.pomocPliki(), jezyk.pomocPlikiTresc()));
         korzen.add(pliki);
         
         // Układ okna        
@@ -107,7 +107,7 @@ public class OknoPomocy extends JDialog implements TreeSelectionListener {
             
             String informacje;
             try {
-                informacje = ((informacjeWezla)zaznaczonyWezel.getUserObject()).pobierzTresc();
+                informacje = ((InformacjeWezla)zaznaczonyWezel.getUserObject()).pobierzTresc();
             }
             catch (Exception ex) {
                 informacje = ex.getMessage();

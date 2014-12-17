@@ -10,10 +10,8 @@ import java.util.List;
  * Ta klasa przechowuje dane, które następnie mogą zostać wykorzystane do utworzenia nowego obszaru wydzielonego.
  * @author Michał Wróbel
  */
-public class DaneDiagramu {
+public class DaneDiagramu extends DaneElementu{
     
-    /** Nazwa obszaru - element obowiązkowy */
-    String nazwa;
     /** Wysokość wiersza w pikselach (null oznacza wartość domyślną) */
     Integer wysokosc;
     /** Szerokosc kolumny w pikselach (null oznacza wartość domyślną) */

@@ -69,17 +69,17 @@ public class Komenda {
             
             if (wnetrzeIdentyfikatora) {
                 
-                if (Character.isWhitespace(c)) {
-                    //Zapisujemy identyfikator z pustym ciałem
-                    atrybuty.add(new AtrybutKomendy(bufor.toString(), "", nrLinii, jezyk));
-                    bufor = new StringBuilder();
-                    wnetrzeIdentyfikatora = false;
-                }
-                else if (c == '=') {
+                if (c == '=') {
                     tymczasowyIdentyfikator = bufor.toString();
                     bufor = new StringBuilder();
                     wnetrzeIdentyfikatora = false;
                     wnetrzeTresci = true;
+                }
+                else if (Character.isWhitespace(c)) {
+                    //Zapisujemy identyfikator z pustym ciałem
+                    atrybuty.add(new AtrybutKomendy(bufor.toString(), "", nrLinii, jezyk));
+                    bufor = new StringBuilder();
+                    wnetrzeIdentyfikatora = false;
                 }
                 else {
                     bufor.append(c);
@@ -111,7 +111,7 @@ public class Komenda {
                         //Opuszczamy klamrę zagnieżdżoną
                         --liczbaKlamerZagniezdzonych;
                     } 
-                    else if ((bufor.length() != 0)&&(Character.isWhitespace(c))&&(liczbaKlamerZagniezdzonych==0)) {
+                    else if ((Character.isWhitespace(c))&&(liczbaKlamerZagniezdzonych<=0)) {
                         //KONIEC ATRYBUTU
                         wnetrzeTresci = false;
                         atrybuty.add(new AtrybutKomendy(tymczasowyIdentyfikator, bufor.toString(), nrLinii, jezyk));
@@ -126,10 +126,6 @@ public class Komenda {
                 wnetrzeIdentyfikatora = true;
             }
             
-        }
-        
-        if (wnetrzeTresci) {
-            atrybuty.add(new AtrybutKomendy(tymczasowyIdentyfikator, bufor.toString(), nrLinii, jezyk));
         }
         
         return atrybuty;

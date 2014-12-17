@@ -8,10 +8,8 @@ import java.util.List;
  * Ta klasa przechowuje dane, które następnie mogą zostać wykorzystane do utworzenia nowego obiektu.
  * @author Michał Wróbel
  */
-public class DaneObiektu {
+public class DaneObiektu  extends DaneElementu {
     
-    /** Nazwa obiektu - element obowiązkowy */
-    String nazwa;
     /** Nazwa selektora (to, co przed dwukropkiem) */
     String nazwaSelektora;
     /** Typ obiektu */

@@ -669,7 +669,7 @@ public class JezykInterfejsuPolski implements JezykInterfejsu {
 
     @Override
     public String etykietaPulpit() {
-        return "Pulpit";
+        return "Folder domowy";
     }
 
     @Override

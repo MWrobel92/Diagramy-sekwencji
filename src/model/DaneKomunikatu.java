@@ -10,10 +10,8 @@ import java.util.List;
  * Ta klasa przechowuje dane, które następnie mogą zostać wykorzystane do utworzenia nowego obszaru wydzielonego.
  * @author Michał Wróbel
  */
-public class DaneKomunikatu {
+public class DaneKomunikatu extends DaneElementu {
     
-    /** Nazwa komunikatu - element obowiązkowy */
-    String nazwa;
     /** Nazwa identyfikatora (null oznacza używanie nazwy jako identyfikatora) */
     String identyfikator;
     /** Typ komunikatu */

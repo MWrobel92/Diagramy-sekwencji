@@ -322,7 +322,7 @@ public class KontrolerOkna implements ActionListener, CaretListener, WindowListe
                 panelDiagramu.ekspotrujPlik(plikDiagramu);
                 plikZostalZapisany = true;
             }
-            catch (Exception ex) {
+            catch (Exception | OutOfMemoryError ex) {
                 JOptionPane.showMessageDialog(elementNadrzedny, jezyk.oknoBladZapisu());
             }
         }

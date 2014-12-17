@@ -36,6 +36,7 @@ public class PanelDiagramu extends JPanel {
     private int szerokoscSiatki;
     
     private int wspolrzednaKonca;
+    private int szerokoscKontrolki;
     
     int[] nadmiaroweSzerokosciObiektow;
     
@@ -66,7 +67,7 @@ public class PanelDiagramu extends JPanel {
     public void paint(Graphics g) {
         
         g.setColor(Color.white);
-        g.fillRect(0, 0, szerokoscSiatki*szerokoscKratki+skumulowanyNadmiar(szerokoscSiatki)+szerokoscKratki/2, wysokoscSiatki*wysokoscKratki+wysokoscNaglowka);
+        g.fillRect(0, 0, szerokoscKontrolki, wysokoscSiatki*wysokoscKratki+wysokoscNaglowka);
                 
         // Rysowanie tytułu
         g.setColor(Color.black);
@@ -182,10 +183,10 @@ public class PanelDiagramu extends JPanel {
             
             if (k.jestTworzeniem()) {
                 if (x2 > x1) {
-                    x2 = xKoniec * szerokoscKratki + 10;
+                    x2 = xKoniec * szerokoscKratki + 10 + skumulowanyNadmiar(xKoniec);
                 }
                 else {
-                    x2 = (xKoniec+1) * szerokoscKratki - 10;
+                    x2 = (xKoniec+1) * szerokoscKratki - 10 + skumulowanyNadmiar(xKoniec+1);
                 }                
             }
             
@@ -407,28 +408,27 @@ public class PanelDiagramu extends JPanel {
     public void odswiez() {
         
         // Wyliczenie nadmiarowych szerokości kolumn
-        int wymiarNadmiarowy = 0;
         int liczbaObiektow = modelDiagramu.zwrocLiczbeObiektow();
         nadmiaroweSzerokosciObiektow = new int[liczbaObiektow];
         LinkedList<Obiekt> listaObiektow = modelDiagramu.zwrocListeObiektow();
         for (int i = 0; i < liczbaObiektow; ++i) {
             int nadmiar = wyliczNadmiarowaSzerokosc(getGraphics(), listaObiektow.get(i).pelnaNazwa(), szerokoscKratki-30);
-            wymiarNadmiarowy += nadmiar;
             nadmiaroweSzerokosciObiektow[i] = nadmiar;
         }
         
         // Ustawienie wymiarów kontrolki
         szerokoscSiatki = liczbaObiektow;
         wysokoscSiatki = modelDiagramu.zwrocLiczbeWierszy();
-        wspolrzednaKonca = wysokoscNaglowka + wysokoscSiatki*wysokoscKratki;  
+        wspolrzednaKonca = wysokoscNaglowka + wysokoscSiatki*wysokoscKratki;
+        szerokoscKontrolki = szerokoscSiatki*szerokoscKratki+skumulowanyNadmiar(szerokoscSiatki)+szerokoscKratki/2;
         
         // Obsłużenie przypadku pustego wykresu
         if (szerokoscSiatki == 0) {
             szerokoscSiatki = 1;
         }
         
-        setSize((szerokoscSiatki+1)*szerokoscKratki + wymiarNadmiarowy, wspolrzednaKonca);        
-        setPreferredSize(new Dimension((szerokoscSiatki+1)*szerokoscKratki + wymiarNadmiarowy, wspolrzednaKonca));
+        setSize(szerokoscKontrolki, wspolrzednaKonca);        
+        setPreferredSize(new Dimension(szerokoscKontrolki, wspolrzednaKonca));
         
         revalidate();
         repaint();
@@ -441,7 +441,7 @@ public class PanelDiagramu extends JPanel {
      */
     public void ekspotrujPlik(File wybranyPlik) throws IOException {
         
-        BufferedImage zbuforowanyPlik = new BufferedImage(szerokoscSiatki*szerokoscKratki, wspolrzednaKonca, BufferedImage.TYPE_INT_RGB);
+        BufferedImage zbuforowanyPlik = new BufferedImage(szerokoscKontrolki, wspolrzednaKonca, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = zbuforowanyPlik.createGraphics();
         paint(g);
         ImageIO.write(zbuforowanyPlik, "png", wybranyPlik);
