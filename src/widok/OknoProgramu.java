@@ -1,6 +1,5 @@
-package kontroler;
+package widok;
 
-import widok.PanelDiagramu;
 import java.awt.BorderLayout;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
@@ -15,10 +14,9 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import javax.swing.text.DefaultEditorKit;
+import kontroler.KontrolerJezykow;
 import model.Diagram;
 import model.JezykInterfejsu;
-import model.JezykInterfejsuPolski;
-import model.JezykSkladniPolski;
 
 /**
  * Klasa odpowiedzialna za interfejs głównego okna programu.
@@ -27,9 +25,10 @@ import model.JezykSkladniPolski;
 public class OknoProgramu extends JPanel {
     
     // Elementy składowe odpowiadające za okno
-    private KontrolerOkna listener;
-    private JFrame frame;    
-    private JezykInterfejsu jezyk;
+    private ObslugaOkna listener;
+    private JFrame frame;
+    
+    KontrolerJezykow kontroler;
     
     // Kontrolki zawierające napisy zależne od języka
     private JMenu menuPlik;
@@ -87,11 +86,11 @@ public class OknoProgramu extends JPanel {
     /**
      * Konstruktor.
      */
-    public OknoProgramu () {
+    public OknoProgramu(KontrolerJezykow kontroler) {
         
         // Inicjalizacja modelu i języka
-        Diagram modelDiagramu = new Diagram(new JezykSkladniPolski());
-        jezyk = new JezykInterfejsuPolski();
+        this.kontroler = kontroler;        
+        Diagram modelDiagramu = new Diagram(kontroler.zwrocJezykSkladni());
         
         // Deklaracje kontenerów GUI
         JMenuBar pasekMenu;
@@ -214,7 +213,7 @@ public class OknoProgramu extends JPanel {
         ustawNapisyNaKontrolkach();
         
         // Ustawienie listenera i komend akcji
-        listener = new KontrolerOkna(this);
+        listener = new ObslugaOkna(this);
         
         menuPlikWczytaj.setActionCommand("PlikWczytaj");
         menuPlikWczytaj.addActionListener(listener);
@@ -273,7 +272,7 @@ public class OknoProgramu extends JPanel {
      * @return 
      */
     JezykInterfejsu pobierzJezyk() {
-        return jezyk;
+        return kontroler.zwrocJezykInterfejsu();
     }
     
     /**
@@ -283,21 +282,13 @@ public class OknoProgramu extends JPanel {
     boolean autoodswiezanie() {
         return menuOpcjeAutoodswiezanie.getState();
     }
-
-    /** 
-     * Funkcja zmieniająca język interfejsu programu.
-     * @param 
-     */
-    void ustawJezyk(JezykInterfejsu nowyJezyk) {
-        jezyk = nowyJezyk;
-        ustawNapisyNaKontrolkach();
-        repaint();
-    }
     
     /**
      * Funkcja dodaje napisy do kontrolek głównego okna programu.
      */
     private void ustawNapisyNaKontrolkach() {        
+        
+        JezykInterfejsu jezyk = kontroler.zwrocJezykInterfejsu();
         
         menuPlik.setText(jezyk.menuPlik());
         menuEdycja.setText(jezyk.menuEdycja());

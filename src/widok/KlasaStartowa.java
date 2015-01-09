@@ -1,4 +1,7 @@
-package kontroler;
+package widok;
+
+import kontroler.KontrolerJezykow;
+import widok.OknoProgramu;
 
 /**
  * Klasa, która ma tylko uruchomić okno programu.
@@ -7,7 +10,8 @@ package kontroler;
 public class KlasaStartowa {
     
     public static void main (String args[]) {
-        OknoProgramu okno = new OknoProgramu();
+        KontrolerJezykow kontroler = new KontrolerJezykow();
+        OknoProgramu okno = new OknoProgramu(kontroler);
         okno.start();
     }
     

@@ -107,7 +107,7 @@ public class Diagram {
         return indeksOstatniegoWiersza;
     }
     
-    public void dodajObiekt(DaneObiektu dane) throws DiagramException {
+    public Obiekt dodajObiekt(DaneObiektu dane) throws DiagramException {
         
         boolean idDoUstawienia = false;
         
@@ -138,6 +138,8 @@ public class Diagram {
         
         dane.gotowyObiekt = nowy;
         daneDodawanychObiektow.add(dane);
+        
+        return nowy;
     }
     
     public Obiekt dodajObiekt(String nazwaKlasy, String nazwaSelektora, String typ, int nrLinii) throws DiagramException {
@@ -199,8 +201,7 @@ public class Diagram {
             nowy = dodajKomunikat(dane.nazwa, dane.typKomunikatu, dane.nazwaObiektu1, dane.nazwaObiektu2, dane.indeksWiersza, dane.komendaNr);
         }
         else {
-            nowy = dodajObiektTworzonyKomunikatem(dane.daneObiektuZagniezdzonego.nazwa,
-                    dane.daneObiektuZagniezdzonego.nazwaSelektora,
+            nowy = dodajObiektTworzonyKomunikatem(dane.daneObiektuZagniezdzonego,
                     dane.nazwa, dane.nazwaObiektu1, dane.indeksWiersza, dane.komendaNr);
             
             dane.daneObiektuZagniezdzonego.gotowyObiekt = nowy.obiektKoncowy;
@@ -509,16 +510,14 @@ public class Diagram {
         return doZwrotu;
     }
 
-    public Komunikat dodajObiektTworzonyKomunikatem(String nazwaObiektu, String selektorObiektu, String nazwaKomunikatu, String nazwaObiektuWychodzacego, Integer indeksWiersza, int nrLinii) throws DiagramException {
+    public Komunikat dodajObiektTworzonyKomunikatem(DaneObiektu daneObiektu, String nazwaKomunikatu, String nazwaObiektuWychodzacego, Integer indeksWiersza, int nrLinii) throws DiagramException {
         
         if (indeksWiersza == null) {
             indeksWiersza = zwrocLiczbeZajetychWierszy();
         }
         
-        Obiekt nowyObiekt = new Obiekt(nazwaObiektu, selektorObiektu, ObiektTyp.KLASA, nrLinii);        
-        nowyObiekt.ustawIndeks(listaObiektow.size());
+        Obiekt nowyObiekt = dodajObiekt(daneObiektu);          
         nowyObiekt.ustawPrzesuniecieNaglowka(indeksWiersza);
-        listaObiektow.add(nowyObiekt);
         
         Obiekt obiektPoczatkowy;
         if (nazwaObiektuWychodzacego != null) {

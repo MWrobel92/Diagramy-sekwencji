@@ -7,6 +7,11 @@ package model;
 public class JezykInterfejsuPolski implements JezykInterfejsu {
 
     @Override
+    public String nazwaJezyka() {
+        return "Polski";
+    }
+    
+    @Override
     public String menuPlik() {
         return "Plik";
     }

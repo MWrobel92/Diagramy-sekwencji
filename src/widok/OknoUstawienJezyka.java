@@ -1,13 +1,14 @@
-package kontroler;
+package widok;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import kontroler.KontrolerJezykow;
 import model.JezykInterfejsu;
 import model.JezykInterfejsuPolski;
 import model.JezykSkladni;
@@ -20,9 +21,10 @@ import model.JezykSkladniPolski;
 public class OknoUstawienJezyka extends JDialog implements ActionListener {
           
     private boolean zatwierdzoneZmiany;
+    private KontrolerJezykow kontrolerJezykow;
     
-    private ArrayList<JezykInterfejsu> jezykiInterfejsu;
-    private ArrayList<JezykSkladni> jezykiSkladni;
+    private List<JezykInterfejsu> jezykiInterfejsu;
+    private List<JezykSkladni> jezykiSkladni;
     
     private JComboBox comboBoxInterfejsu;
     private JComboBox comboBoxSkladni;
@@ -44,7 +46,7 @@ public class OknoUstawienJezyka extends JDialog implements ActionListener {
     }
     
     /**
-     * Fonkcja zwracająca informację, czy użytkowin zatwierdził wprowadzone ustawienia, czy też je odrzucił..
+     * Fonkcja zwracająca informację, czy użytkowik zatwierdził wprowadzone ustawienia, czy też je odrzucił.
      * @return 
      */
     public boolean zatwierdzono() {
@@ -57,9 +59,10 @@ public class OknoUstawienJezyka extends JDialog implements ActionListener {
      * @param naglowek Nazwa okna.
      * @param jezyk Aktualny język interfejsu.
      */
-    public OknoUstawienJezyka (OknoProgramu elementNadrzedny, String naglowek, JezykInterfejsu jezyk) {
+    public OknoUstawienJezyka (OknoProgramu elementNadrzedny, KontrolerJezykow kontroler) {
         
-        super(elementNadrzedny.pobierzRamke(), naglowek, true);
+        super(elementNadrzedny.pobierzRamke(),kontroler.zwrocJezykInterfejsu().menuOpcjeJezyk(), true);
+        kontrolerJezykow = kontroler;
         zatwierdzoneZmiany = false;
         
         this.setSize(300, 200);
@@ -68,24 +71,24 @@ public class OknoUstawienJezyka extends JDialog implements ActionListener {
         comboBoxInterfejsu = new JComboBox();
         comboBoxSkladni = new JComboBox();
         
-        jezykiInterfejsu = new ArrayList<>();
-        jezykiSkladni = new ArrayList<>();
+        jezykiInterfejsu = kontroler.zwrocListeJezykowInterfejsu();
+        jezykiSkladni = kontroler.zwrocListeJezykowSkladni();
         
-        // DODAWANIE JĘZYKÓW INTERFEJSU
+        // Dodawanie języków do ComboBo
         
-        comboBoxInterfejsu.addItem("Polski");
-        jezykiInterfejsu.add(new JezykInterfejsuPolski());
+        for (JezykInterfejsu j : jezykiInterfejsu) {
+            comboBoxInterfejsu.addItem(j.nazwaJezyka());
+        }
         
-        // DODAWANIE JĘZYKÓW SKŁADNI
+        for (JezykSkladni j : jezykiSkladni) {
+            comboBoxSkladni.addItem(j.nazwaJezyka());
+        }
         
-        comboBoxSkladni.addItem("Polski");
-        jezykiSkladni.add(new JezykSkladniPolski());
-        
-        // KONIEC DODAWANIA JĘZYKÓW
+        // Ułożenie kontrolek
                 
-        this.add(new JLabel(jezyk.kontrolkaJezykInterfejsu()));
+        this.add(new JLabel(kontroler.zwrocJezykInterfejsu().kontrolkaJezykInterfejsu()));
         this.add(comboBoxInterfejsu);
-        this.add(new JLabel(jezyk.kontrolkaJezykSkladni()));
+        this.add(new JLabel(kontroler.zwrocJezykInterfejsu().kontrolkaJezykSkladni()));
         this.add(comboBoxSkladni);
         
         JButton ok = new JButton("OK");
@@ -93,7 +96,7 @@ public class OknoUstawienJezyka extends JDialog implements ActionListener {
         ok.addActionListener(this);
         this.add(ok);      
         
-        JButton anuluj = new JButton(jezyk.przyciskAnuluj());
+        JButton anuluj = new JButton(kontroler.zwrocJezykInterfejsu().przyciskAnuluj());
         anuluj.setActionCommand("anuluj");
         anuluj.addActionListener(this);
         this.add(anuluj);
@@ -103,7 +106,10 @@ public class OknoUstawienJezyka extends JDialog implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         
         if (e.getActionCommand().equals("ok")) {
+            
             zatwierdzoneZmiany = true;
+            kontrolerJezykow.zmienJezykInterfejsu(comboBoxInterfejsu.getSelectedIndex());
+            kontrolerJezykow.zmienJezykSkladni(comboBoxSkladni.getSelectedIndex());
         }  
         
         dispose();

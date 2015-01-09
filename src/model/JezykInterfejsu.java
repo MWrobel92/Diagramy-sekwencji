@@ -6,6 +6,8 @@ package model;
  */
 public interface JezykInterfejsu {
     
+    public String nazwaJezyka();
+    
     public String menuPlik ();
     public String menuEdycja ();
     public String menuDiagram ();

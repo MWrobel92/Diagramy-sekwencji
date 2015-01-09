@@ -6,6 +6,8 @@ package model;
  */
 public interface JezykSkladni {
 
+    public String nazwaJezyka();
+    
     public String atrybutNazwa();
     public String atrybutObiektuStartowego();
     public String atrybutObiektuKoncowego();

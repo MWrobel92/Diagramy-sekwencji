@@ -7,6 +7,11 @@ package model;
 public class JezykSkladniPolski implements JezykSkladni {
 
     @Override
+    public String nazwaJezyka() {
+        return "Polski";
+    }
+    
+    @Override
     public String atrybutNazwa() {
         return "nazwa";
     }

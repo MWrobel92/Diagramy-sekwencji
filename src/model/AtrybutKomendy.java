@@ -37,14 +37,33 @@ public class AtrybutKomendy {
     }
     
     /**
-     * Usuwa początkowy i końcowy cudzysłów (jeśli oba istnieją)
+     * Usuwa początkowy i końcowy cudzysłów (jeśli oba istnieją),
+     * a także (w tym samym przypadku) pozbywa się odwróconych ukośników
      */
     private void przytnij() {
         
         if ((cialo.startsWith("\"")) && (cialo.endsWith("\""))) {
             cialo = cialo.substring(1, cialo.length()-1);
+            
+            StringBuilder noweCialo = new StringBuilder();
+            
+            boolean ignoruj = false;
+            for(char c : cialo.toCharArray()) {
+                
+                if (ignoruj) {
+                    ignoruj = false;
+                }
+                else if (c == '\\') {
+                    ignoruj = true;
+                    continue;
+                }                
+                noweCialo.append(c);
+            }
+            cialo = noweCialo.toString();
             byloPrzycinane = true;
         }
+        
+        
     }
     
     /**
